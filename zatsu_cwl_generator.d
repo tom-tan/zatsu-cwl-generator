@@ -3,6 +3,8 @@ import std;
 
 @safe:
 
+version(unittest) {}
+else
 void main(string[] args)
 {
     if (args.length != 2) {
