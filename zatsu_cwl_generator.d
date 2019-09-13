@@ -121,7 +121,7 @@ auto guess_type(string option, string value)
     return "Any";
 }
 
-@safe unittest {
+unittest {
     assert("cat aaa.txt bbb.txt > output.txt".to_cwl,
         q"EOS
 class: CommandLineTool
