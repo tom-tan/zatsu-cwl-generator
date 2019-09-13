@@ -78,6 +78,7 @@ EOS", class_, cwlVersion, baseCommand);
   - id: %s
     type: %s
 EOS", param, type);
+            opt_arg = false;
         }
     }
     cwl ~= "arguments:" ~ (arguments.empty ? " []" : "\n"~arguments.join("\n")) ~ "\n";
