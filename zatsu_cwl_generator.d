@@ -7,6 +7,7 @@ void main(string[] args)
 {
     if (args.length != 2) {
         writefln("Usage: %s <commandline>", args[0]);
+        return;
     }
     args[1].to_cwl.write;
 }
