@@ -21,3 +21,9 @@ outputs:
     type: stdout
 stdout: output.txt
 ```
+
+# How to test this program
+
+```console
+$ rdmd -main -unittest zatsu_cwl_generator.d
+```
