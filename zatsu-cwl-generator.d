@@ -5,4 +5,7 @@ import std.range;
 void main()
 {
     writefln("class: CommandLineTool\ncwlVersion: v1.0\nbaseCommand: cat\n");
+    writefln("arguments: []\n");
+    writefln("inputs: []\n");
+    writefln("outputs: []\n");
 }
