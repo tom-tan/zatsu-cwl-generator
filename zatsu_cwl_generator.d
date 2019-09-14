@@ -128,7 +128,7 @@ do
     }
     else
     {
-        return value.tr(".", "_");
+        return value.tr(".-", "_");
     }
 }
 
@@ -138,6 +138,9 @@ unittest {
     assert("3.14".to_input_param == "_3_14");
     assert("foobar.txt".to_input_param == "foobar_txt");
     assert("value".to_input_param == "value");
+
+    // For #5
+    assert("this-file-is.txt".to_input_param == "this_file_is_txt");
 }
 
 auto guess_type(string option, string value)
