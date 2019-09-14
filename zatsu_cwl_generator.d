@@ -3,6 +3,9 @@ import std;
 
 @safe:
 
+immutable IntRegex= ctRegex!r"^\d+$";
+immutable DoubleRegex = ctRegex!r"^\d+\.\d+$";
+
 version(unittest) {}
 else
 void main(string[] args)
@@ -72,7 +75,7 @@ EOS", class_, cwlVersion, baseCommand);
         } else {
             // guess type from option name
             immutable type = guess_type(opt_arg ? args[i-1]: "", a);
-            immutable param = a.tr(".", "_");
+            immutable param = a.to_input_param;
             arguments ~= format("  - $(inputs.%s)", param);
             inputs ~= format(q"EOS
   - id: %s
@@ -108,6 +111,35 @@ EOS";
     return cwl;
 }
 
+/**
+ * Returns: a valid CWL input parameter id generated from `value`
+ */
+auto to_input_param(in string value)
+in(!value.empty)
+do
+{
+    if (value.matchFirst(IntRegex))
+    {
+        return "_" ~ value;
+    }
+    else if (value.matchFirst(DoubleRegex))
+    {
+        return "_" ~ value.tr(".", "_");
+    }
+    else
+    {
+        return value.tr(".", "_");
+    }
+}
+
+///
+unittest {
+    assert("5".to_input_param == "_5");
+    assert("3.14".to_input_param == "_3_14");
+    assert("foobar.txt".to_input_param == "foobar_txt");
+    assert("value".to_input_param == "value");
+}
+
 auto guess_type(string option, string value)
 {
     if (option.endsWith("dir")) {
@@ -115,9 +147,9 @@ auto guess_type(string option, string value)
     } else if (option.endsWith("file")) {
         return "File";
     }
-    if (value.match(ctRegex!r"^\d+$")) {
+    if (value.match(IntRegex)) {
         return "int";
-    } else if (value.match(ctRegex!r"^\d+\.\d+$")) {
+    } else if (value.match(DoubleRegex)) {
         return "double";
     } else if (value.canFind(".")) {
         return "File";
