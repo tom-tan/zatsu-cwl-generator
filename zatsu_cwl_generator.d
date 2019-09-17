@@ -245,6 +245,7 @@ unittest
  */
 auto guessType(string value, string option = "")
 {
+    // guess from `option`
     if (option.endsWith("dir"))
     {
         return "Directory";
@@ -254,6 +255,7 @@ auto guessType(string value, string option = "")
         return "File";
     }
 
+    // guess from `value`
     if (value.match(IntRegex))
     {
         return "int";
@@ -271,6 +273,10 @@ auto guessType(string value, string option = "")
     {
         // It will be a file in current directory
         return "File";
+    }
+    else if (value.endsWith("dir"))
+    {
+        return "Directory";
     }
     return "Any";
 }
