@@ -100,7 +100,16 @@ EOS", param, type);
     cwl ~= "arguments:" ~ (arguments.empty ? " []" : "\n"~arguments.join("\n")) ~ "\n";
     cwl ~= "inputs:" ~ (inputs.empty ? " []\n" : "\n"~inputs.join);
 
-    string[] outputs;
+    string[] outputs = [
+        q"EOS
+  - id: all-for-debugging
+    type:
+      type: array
+      items: [File, Directory]
+    outputBinding:
+      glob: "*"
+EOS"
+        ];
     if (!stdout_.empty)
     {
         outputs ~= q"EOS
@@ -145,6 +154,12 @@ inputs:
   - id: bbb_txt
     type: File
 outputs:
+  - id: all-for-debugging
+    type:
+      type: array
+      items: [File, Directory]
+    outputBinding:
+      glob: "*"
   - id: out
     type: stdout
 stdout: output.txt
@@ -169,6 +184,12 @@ inputs:
   - id: ccc_txt
     type: File
 outputs:
+  - id: all-for-debugging
+    type:
+      type: array
+      items: [File, Directory]
+    outputBinding:
+      glob: "*"
   - id: out
     type: stdout
 stdout: output.txt
