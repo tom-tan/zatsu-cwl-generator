@@ -73,25 +73,25 @@ baseCommand: %s
 EOS", class_, cwlVersion, baseCommand);
 
     string[] arguments, inputs;
-    bool opt_arg;
+    string prevOption;
     foreach(i, a; args[1..$])
     {
         if (a.startsWith("-"))
         {
             arguments ~= format("  - %s", a);
-            opt_arg = true;
+            prevOption = a;
         }
         else
         {
             // guess type from option name
-            immutable type = guessType(opt_arg ? args[i-1]: "", a);
-            immutable param = a.toInputParam;
+            immutable type = guessType(prevOption, a);
+            immutable param = (prevOption.empty ? a : prevOption).toInputParam;
             arguments ~= format("  - $(inputs.%s)", param);
             inputs ~= format(q"EOS
   - id: %s
     type: %s
 EOS", param, type);
-            opt_arg = false;
+            prevOption = "";
         }
     }
     cwl ~= "arguments:" ~ (arguments.empty ? " []" : "\n"~arguments.join("\n")) ~ "\n";
@@ -128,10 +128,15 @@ EOS";
 /**
  * Returns: a valid CWL input parameter id generated from `value`
  */
-auto toInputParam(in string value)
+auto toInputParam(string value)
 in(!value.empty)
 do
 {
+    if (value.startsWith("-"))
+    {
+        value = value.stripLeft("-");
+    }
+
     if (value.matchFirst(IntRegex))
     {
         return "_" ~ value;
@@ -156,6 +161,9 @@ unittest
 
     // For #5
     assert("this-file-is.txt".toInputParam == "this_file_is_txt");
+
+    assert("-n".toInputParam == "n");
+    assert("--option".toInputParam == "option");
 }
 
 auto guessType(string option, string value)
@@ -215,10 +223,10 @@ cwlVersion: v1.0
 baseCommand: head
 arguments:
   - -n
-  - $(inputs._5)
+  - $(inputs.n)
   - $(inputs.ccc_txt)
 inputs:
-  - id: _5
+  - id: n
     type: int
   - id: ccc_txt
     type: File
