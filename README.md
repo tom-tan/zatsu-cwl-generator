@@ -39,7 +39,7 @@ $ rdmd -main -unittest zatsu_cwl_generator.d
 # How to generate an internal document
 
 ```console
-dmd -Dddoc zatsu_cwl_generator.d
+dmd -Dddocs zatsu_cwl_generator.d
 ```
 
 You can see a HTML file in the `doc` directory.
