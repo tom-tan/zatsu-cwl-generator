@@ -70,7 +70,7 @@ EOS", class_, cwlVersion, baseCommand);
     bool opt_arg;
     foreach(i, a; args[1..$]) {
         if (a.startsWith("-")) {
-            arguments ~= a;
+            arguments ~= format("  - %s", a);
             opt_arg = true;
         } else {
             // guess type from option name
@@ -173,6 +173,29 @@ inputs:
   - id: aaa_txt
     type: File
   - id: bbb_txt
+    type: File
+outputs:
+  - id: out
+    type: stdout
+stdout: output.txt
+EOS");
+}
+
+// #4
+unittest {
+    assert("head -n 5 ccc.txt > output.txt".to_cwl,
+        q"EOS
+class: CommandLineTool
+cwlVersion: v1.0
+baseCommand: head
+arguments:
+  - -n
+  - $(inputs.5)
+  - $(inputs.ccc_txt)
+inputs:
+  - id: 5
+    type: int
+  - id: ccc_txt
     type: File
 outputs:
   - id: out
