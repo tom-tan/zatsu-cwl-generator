@@ -185,7 +185,7 @@ auto guessType(string option, string value)
 
 unittest
 {
-    assert("cat aaa.txt bbb.txt > output.txt".toCWL,
+    assert("cat aaa.txt bbb.txt > output.txt".toCWL ==
         q"EOS
 class: CommandLineTool
 cwlVersion: v1.0
@@ -208,17 +208,17 @@ EOS");
 // #4
 unittest
 {
-    assert("head -n 5 ccc.txt > output.txt".toCWL,
+    assert("head -n 5 ccc.txt > output.txt".toCWL ==
         q"EOS
 class: CommandLineTool
 cwlVersion: v1.0
 baseCommand: head
 arguments:
   - -n
-  - $(inputs.5)
+  - $(inputs._5)
   - $(inputs.ccc_txt)
 inputs:
-  - id: 5
+  - id: _5
     type: int
   - id: ccc_txt
     type: File
