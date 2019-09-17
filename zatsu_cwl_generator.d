@@ -10,37 +10,43 @@ version(unittest) {}
 else
 void main(string[] args)
 {
-    if (args.length != 2) {
+    if (args.length != 2)
+    {
         writefln("Usage: %s <commandline>", args[0]);
         return;
     }
-    args[1].to_cwl.write;
+    args[1].toCWL.write;
 }
 
-auto to_cwl(string cmd)
+auto toCWL(string cmd)
 {
     auto sout = "";
     auto serr = "";
 
     // detect redirect to stderr
-    if (auto arr = cmd.findSplit("2>")) {
+    if (auto arr = cmd.findSplit("2>"))
+    {
         auto pre = arr[0].stripRight;
         assert(arr[1] == "2>");
         auto post = arr[2].stripLeft;
 
         auto tmp = post.split;
         enforce(!tmp.empty, "No file specified to be redirected stderr!");
-        if (tmp.length == 1) {
+        if (tmp.length == 1)
+        {
             serr = tmp[0];
             cmd = pre;
-        } else {
+        }
+        else
+        {
             serr = tmp[1];
             cmd = pre ~ " " ~ tmp[2..$].join(" ");
         }
     }
 
     // detect redirect to stdout
-    if (auto arr = cmd.findSplit(">")) {
+    if (auto arr = cmd.findSplit(">"))
+    {
         auto pre = arr[0].stripRight;
         assert(arr[1] == ">");
         auto post = arr[2].stripLeft;
@@ -68,14 +74,18 @@ EOS", class_, cwlVersion, baseCommand);
 
     string[] arguments, inputs;
     bool opt_arg;
-    foreach(i, a; args[1..$]) {
-        if (a.startsWith("-")) {
+    foreach(i, a; args[1..$])
+    {
+        if (a.startsWith("-"))
+        {
             arguments ~= format("  - %s", a);
             opt_arg = true;
-        } else {
+        }
+        else
+        {
             // guess type from option name
-            immutable type = guess_type(opt_arg ? args[i-1]: "", a);
-            immutable param = a.to_input_param;
+            immutable type = guessType(opt_arg ? args[i-1]: "", a);
+            immutable param = a.toInputParam;
             arguments ~= format("  - $(inputs.%s)", param);
             inputs ~= format(q"EOS
   - id: %s
@@ -88,13 +98,15 @@ EOS", param, type);
     cwl ~= "inputs:" ~ (inputs.empty ? " []\n" : "\n"~inputs.join);
 
     string[] outputs;
-    if (!stdout_.empty) {
+    if (!stdout_.empty)
+    {
         outputs ~= q"EOS
   - id: out
     type: stdout
 EOS";
     }
-    if (!stderr_.empty) {
+    if (!stderr_.empty)
+    {
         outputs ~= q"EOS
   - id: err
     type: stderr
@@ -102,10 +114,12 @@ EOS";
     }
     cwl ~= "outputs:" ~ (outputs.empty ? " []\n" : "\n"~outputs.join);
 
-    if (!stdout_.empty) {
+    if (!stdout_.empty)
+    {
         cwl ~= format("stdout: %s\n", stdout_);
     }
-    if (!stderr_.empty) {
+    if (!stderr_.empty)
+    {
         cwl ~= format("stderr: %s\n", stderr_);
     }
     return cwl;
@@ -114,7 +128,7 @@ EOS";
 /**
  * Returns: a valid CWL input parameter id generated from `value`
  */
-auto to_input_param(in string value)
+auto toInputParam(in string value)
 in(!value.empty)
 do
 {
@@ -133,35 +147,45 @@ do
 }
 
 ///
-unittest {
-    assert("5".to_input_param == "_5");
-    assert("3.14".to_input_param == "_3_14");
-    assert("foobar.txt".to_input_param == "foobar_txt");
-    assert("value".to_input_param == "value");
+unittest
+{
+    assert("5".toInputParam == "_5");
+    assert("3.14".toInputParam == "_3_14");
+    assert("foobar.txt".toInputParam == "foobar_txt");
+    assert("value".toInputParam == "value");
 
     // For #5
-    assert("this-file-is.txt".to_input_param == "this_file_is_txt");
+    assert("this-file-is.txt".toInputParam == "this_file_is_txt");
 }
 
-auto guess_type(string option, string value)
+auto guessType(string option, string value)
 {
-    if (option.endsWith("dir")) {
+    if (option.endsWith("dir"))
+    {
         return "Directory";
-    } else if (option.endsWith("file")) {
+    }
+    else if (option.endsWith("file"))
+    {
         return "File";
     }
-    if (value.match(IntRegex)) {
+    if (value.match(IntRegex))
+    {
         return "int";
-    } else if (value.match(DoubleRegex)) {
+    }
+    else if (value.match(DoubleRegex))
+    {
         return "double";
-    } else if (value.canFind(".")) {
+    }
+    else if (value.canFind("."))
+    {
         return "File";
     }
     return "Any";
 }
 
-unittest {
-    assert("cat aaa.txt bbb.txt > output.txt".to_cwl,
+unittest
+{
+    assert("cat aaa.txt bbb.txt > output.txt".toCWL ==
         q"EOS
 class: CommandLineTool
 cwlVersion: v1.0
@@ -182,18 +206,19 @@ EOS");
 }
 
 // #4
-unittest {
-    assert("head -n 5 ccc.txt > output.txt".to_cwl,
+unittest
+{
+    assert("head -n 5 ccc.txt > output.txt".toCWL ==
         q"EOS
 class: CommandLineTool
 cwlVersion: v1.0
 baseCommand: head
 arguments:
   - -n
-  - $(inputs.5)
+  - $(inputs._5)
   - $(inputs.ccc_txt)
 inputs:
-  - id: 5
+  - id: _5
     type: int
   - id: ccc_txt
     type: File

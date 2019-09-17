@@ -1,6 +1,7 @@
 # Compiled Object files
 *.o
 *.obj
+zatsu_cwl_generator
 
 # Compiled Dynamic libraries
 *.so
