@@ -48,4 +48,4 @@ $ rdmd -main -unittest zatsu_cwl_generator.d
 dmd -Dddocs zatsu_cwl_generator.d
 ```
 
-You can see a HTML file in the `doc` directory.
+You can see a HTML file in the `docs` directory.
