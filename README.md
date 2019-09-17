@@ -22,8 +22,24 @@ outputs:
 stdout: output.txt
 ```
 
+or:
+
+```console
+$ dmd zatsu_cwl_generator.d -of=zatsu_cwl_generator
+$ ./zatsu_cwl_generator "cat aaa.txt bbb.txt > output.txt"
+...
+```
+
 # How to test this program
 
 ```console
 $ rdmd -main -unittest zatsu_cwl_generator.d
 ```
+
+# How to generate an internal document
+
+```console
+dmd -Dddoc zatsu_cwl_generator.d
+```
+
+You can see a HTML file in the `doc` directory.
