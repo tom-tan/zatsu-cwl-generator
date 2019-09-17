@@ -17,6 +17,12 @@ inputs:
   - id: bbb_txt
     type: File
 outputs:
+  - id: all-for-debugging
+    type:
+      type: array
+      items: [File, Directory]
+    outputBinding:
+      glob: "*"
   - id: out
     type: stdout
 stdout: output.txt
