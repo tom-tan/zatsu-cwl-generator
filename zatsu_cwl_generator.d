@@ -15,10 +15,10 @@ void main(string[] args)
         writefln("Usage: %s <commandline>", args[0]);
         return;
     }
-    args[1].to_cwl.write;
+    args[1].toCWL.write;
 }
 
-auto to_cwl(string cmd)
+auto toCWL(string cmd)
 {
     auto sout = "";
     auto serr = "";
@@ -84,8 +84,8 @@ EOS", class_, cwlVersion, baseCommand);
         else
         {
             // guess type from option name
-            immutable type = guess_type(opt_arg ? args[i-1]: "", a);
-            immutable param = a.to_input_param;
+            immutable type = guessType(opt_arg ? args[i-1]: "", a);
+            immutable param = a.toInputParam;
             arguments ~= format("  - $(inputs.%s)", param);
             inputs ~= format(q"EOS
   - id: %s
@@ -128,7 +128,7 @@ EOS";
 /**
  * Returns: a valid CWL input parameter id generated from `value`
  */
-auto to_input_param(in string value)
+auto toInputParam(in string value)
 in(!value.empty)
 do
 {
@@ -149,16 +149,16 @@ do
 ///
 unittest
 {
-    assert("5".to_input_param == "_5");
-    assert("3.14".to_input_param == "_3_14");
-    assert("foobar.txt".to_input_param == "foobar_txt");
-    assert("value".to_input_param == "value");
+    assert("5".toInputParam == "_5");
+    assert("3.14".toInputParam == "_3_14");
+    assert("foobar.txt".toInputParam == "foobar_txt");
+    assert("value".toInputParam == "value");
 
     // For #5
-    assert("this-file-is.txt".to_input_param == "this_file_is_txt");
+    assert("this-file-is.txt".toInputParam == "this_file_is_txt");
 }
 
-auto guess_type(string option, string value)
+auto guessType(string option, string value)
 {
     if (option.endsWith("dir"))
     {
@@ -185,7 +185,7 @@ auto guess_type(string option, string value)
 
 unittest
 {
-    assert("cat aaa.txt bbb.txt > output.txt".to_cwl,
+    assert("cat aaa.txt bbb.txt > output.txt".toCWL,
         q"EOS
 class: CommandLineTool
 cwlVersion: v1.0
@@ -208,7 +208,7 @@ EOS");
 // #4
 unittest
 {
-    assert("head -n 5 ccc.txt > output.txt".to_cwl,
+    assert("head -n 5 ccc.txt > output.txt".toCWL,
         q"EOS
 class: CommandLineTool
 cwlVersion: v1.0
