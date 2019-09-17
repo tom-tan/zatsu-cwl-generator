@@ -18,6 +18,9 @@ void main(string[] args)
     args[1].toCWL.write;
 }
 
+/**
+ * Returns: a CWL definition from a given commandline `cmd`.
+ */
 auto toCWL(string cmd)
 {
     auto sout = "";
@@ -84,7 +87,7 @@ EOS", class_, cwlVersion, baseCommand);
         else
         {
             // guess type from option name
-            immutable type = guessType(prevOption, a);
+            immutable type = a.guessType(prevOption);
             immutable param = (prevOption.empty ? a : prevOption).toInputParam;
             arguments ~= format("  - $(inputs.%s)", param);
             inputs ~= format(q"EOS
@@ -123,6 +126,53 @@ EOS";
         cwl ~= format("stderr: %s\n", stderr_);
     }
     return cwl;
+}
+
+/// Simple example
+unittest
+{
+    assert("cat aaa.txt bbb.txt > output.txt".toCWL ==
+        q"EOS
+class: CommandLineTool
+cwlVersion: v1.0
+baseCommand: cat
+arguments:
+  - $(inputs.aaa_txt)
+  - $(inputs.bbb_txt)
+inputs:
+  - id: aaa_txt
+    type: File
+  - id: bbb_txt
+    type: File
+outputs:
+  - id: out
+    type: stdout
+stdout: output.txt
+EOS");
+}
+
+/// with options
+unittest
+{
+    assert("head -n 5 ccc.txt > output.txt".toCWL ==
+        q"EOS
+class: CommandLineTool
+cwlVersion: v1.0
+baseCommand: head
+arguments:
+  - -n
+  - $(inputs.n)
+  - $(inputs.ccc_txt)
+inputs:
+  - id: n
+    type: int
+  - id: ccc_txt
+    type: File
+outputs:
+  - id: out
+    type: stdout
+stdout: output.txt
+EOS");
 }
 
 /**
@@ -166,7 +216,10 @@ unittest
     assert("--option".toInputParam == "option");
 }
 
-auto guessType(string option, string value)
+/**
+ * Returns: a type string reasoned from the option and its value
+ */
+auto guessType(string value, string option = "")
 {
     if (option.endsWith("dir"))
     {
@@ -191,48 +244,24 @@ auto guessType(string option, string value)
     return "Any";
 }
 
+///
 unittest
 {
-    assert("cat aaa.txt bbb.txt > output.txt".toCWL ==
-        q"EOS
-class: CommandLineTool
-cwlVersion: v1.0
-baseCommand: cat
-arguments:
-  - $(inputs.aaa_txt)
-  - $(inputs.bbb_txt)
-inputs:
-  - id: aaa_txt
-    type: File
-  - id: bbb_txt
-    type: File
-outputs:
-  - id: out
-    type: stdout
-stdout: output.txt
-EOS");
-}
+    /* guess a type from the option if it is provided */
+    // if option ends with `dir`, it will be a directory
+    assert("foo".guessType("--outdir") == "Directory");
+    // if option ends with `file`, it will be a File
+    assert("bar".guessType("--outfile") == "File");
 
-// #4
-unittest
-{
-    assert("head -n 5 ccc.txt > output.txt".toCWL ==
-        q"EOS
-class: CommandLineTool
-cwlVersion: v1.0
-baseCommand: head
-arguments:
-  - -n
-  - $(inputs.n)
-  - $(inputs.ccc_txt)
-inputs:
-  - id: n
-    type: int
-  - id: ccc_txt
-    type: File
-outputs:
-  - id: out
-    type: stdout
-stdout: output.txt
-EOS");
+    /* otherwise guess a typpe from its value */
+    // if the value seems to be an integer, it will be an integer
+    assert("13".guessType == "int");
+    // if the value seems to be a floating ppoint, it will be a double precision number
+    assert("13.5".guessType == "double");
+    // if the value seems to be a file with an extension, it will be a File
+    assert("foobar.txt".guessType == "File");
+
+    // return `Any` if it cannot guess a type
+    assert("13a".guessType == "Any");
+    assert("unknown-value".guessType("--unknown-option") == "Any");
 }
