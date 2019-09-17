@@ -4,7 +4,7 @@ This is a simple CWL definition generator from a given execution commands.
 # How to execute
 
 ```console
-./zatsu_cwl_generator.d "cat aaa.txt bbb.txt > output.txt"
+$ ./zatsu_cwl_generator.d "cat aaa.txt bbb.txt > output.txt"
 class: CommandLineTool
 cwlVersion: v1.0
 baseCommand: cat
