@@ -21,7 +21,7 @@ void main(string[] args)
 /**
  * Returns: a CWL definition from a given commandline `cmd`.
  */
-auto toCWL(string cmd)
+string toCWL(string cmd)
 {
     auto sout = "";
     auto serr = "";
@@ -199,7 +199,7 @@ EOS");
 /**
  * Returns: a valid CWL input parameter id generated from `value`
  */
-auto toInputParam(string value)
+string toInputParam(string value)
 in(!value.empty)
 do
 {
@@ -243,7 +243,7 @@ unittest
 /**
  * Returns: a type string reasoned from the option and its value
  */
-auto guessType(string value, string option = "")
+string guessType(string value, string option = "")
 {
     // guess from `option`
     if (option.endsWith("dir"))
