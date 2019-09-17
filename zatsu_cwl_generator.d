@@ -76,30 +76,6 @@ baseCommand: %s
 EOS", class_, cwlVersion, baseCommand);
 
     string[] arguments, inputs;
-    string prevOption;
-    foreach(i, a; args[1..$])
-    {
-        if (a.startsWith("-"))
-        {
-            arguments ~= format("  - %s", a);
-            prevOption = a;
-        }
-        else
-        {
-            // guess type from option name
-            immutable type = a.guessType(prevOption);
-            immutable param = (prevOption.empty ? a : prevOption).toInputParam;
-            arguments ~= format("  - $(inputs.%s)", param);
-            inputs ~= format(q"EOS
-  - id: %s
-    type: %s
-EOS", param, type);
-            prevOption = "";
-        }
-    }
-    cwl ~= "arguments:" ~ (arguments.empty ? " []" : "\n"~arguments.join("\n")) ~ "\n";
-    cwl ~= "inputs:" ~ (inputs.empty ? " []\n" : "\n"~inputs.join);
-
     string[] outputs = [
         q"EOS
   - id: all-for-debugging
@@ -110,6 +86,43 @@ EOS", param, type);
       glob: "*"
 EOS"
         ];
+    string prevOption;
+    foreach(i, a; args[1..$])
+    {
+        if (a.startsWith("-"))
+        {
+            arguments ~= format("  - %s", a);
+            prevOption = a;
+        }
+        else
+        {
+            immutable seemsOut = a.seemsOutput(prevOption);
+
+            // guess type from option name
+            immutable type = a.guessType(prevOption);
+            immutable param = (prevOption.empty ? a : prevOption).toInputParam;
+            immutable inParam = seemsOut ? param~"_name" : param;
+            immutable outParam = seemsOut ? param : "";
+            arguments ~= format("  - $(inputs.%s)", inParam);
+            inputs ~= format(q"EOS
+  - id: %s
+    type: %s
+EOS", inParam, seemsOut ? "string" : type);
+            if (seemsOut)
+            {
+                outputs ~= format(q"EOS
+  - id: %s
+    type: %s
+    outputBinding:
+      glob: "$(inputs.%s)"
+EOS", outParam, type, inParam);
+            }
+            prevOption = "";
+        }
+    }
+    cwl ~= "arguments:" ~ (arguments.empty ? " []" : "\n"~arguments.join("\n")) ~ "\n";
+    cwl ~= "inputs:" ~ (inputs.empty ? " []\n" : "\n"~inputs.join);
+
     if (!stdout_.empty)
     {
         outputs ~= q"EOS
@@ -193,6 +206,37 @@ outputs:
   - id: out
     type: stdout
 stdout: output.txt
+EOS");
+}
+
+/// guess output object
+unittest
+{
+    assert("gcc -o sample.exe sample.c".toCWL ==
+           q"EOS
+class: CommandLineTool
+cwlVersion: v1.0
+baseCommand: gcc
+arguments:
+  - -o
+  - $(inputs.o_name)
+  - $(inputs.sample_c)
+inputs:
+  - id: o_name
+    type: string
+  - id: sample_c
+    type: File
+outputs:
+  - id: all-for-debugging
+    type:
+      type: array
+      items: [File, Directory]
+    outputBinding:
+      glob: "*"
+  - id: o
+    type: File
+    outputBinding:
+      glob: "$(inputs.o_name)"
 EOS");
 }
 
@@ -306,4 +350,38 @@ unittest
     // return `Any` if it cannot guess a type
     assert("13a".guessType == "Any");
     assert("unknown-value".guessType("--unknown-option") == "Any");
+}
+
+bool seemsOutput(string value, string option = "")
+{
+    // guess from `option`
+    if (option == "-o")
+    {
+        return true;
+    }
+    else if (option.startsWith("--out"))
+    {
+        return true;
+    }
+
+    // guess from `value`
+    if (value.startsWith("out"))
+    {
+        return true;
+    }
+    return false;
+}
+
+unittest
+{
+    assert("aaa.txt".seemsOutput("-o"));
+    assert(!"aaa.txt".seemsOutput("-a"));
+
+    assert("bbb.txt".seemsOutput("--output"));
+    assert("bbb.txt".seemsOutput("--outdir"));
+    assert(!"bbb.txt".seemsOutput("--auto"));
+
+    assert("output.txt".seemsOutput);
+    assert("outdir".seemsOutput);
+    assert(!"input.txt".seemsOutput);
 }
