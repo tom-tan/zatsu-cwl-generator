@@ -10,7 +10,8 @@ version(unittest) {}
 else
 void main(string[] args)
 {
-    if (args.length != 2) {
+    if (args.length != 2)
+    {
         writefln("Usage: %s <commandline>", args[0]);
         return;
     }
@@ -23,24 +24,29 @@ auto to_cwl(string cmd)
     auto serr = "";
 
     // detect redirect to stderr
-    if (auto arr = cmd.findSplit("2>")) {
+    if (auto arr = cmd.findSplit("2>"))
+    {
         auto pre = arr[0].stripRight;
         assert(arr[1] == "2>");
         auto post = arr[2].stripLeft;
 
         auto tmp = post.split;
         enforce(!tmp.empty, "No file specified to be redirected stderr!");
-        if (tmp.length == 1) {
+        if (tmp.length == 1)
+        {
             serr = tmp[0];
             cmd = pre;
-        } else {
+        }
+        else
+        {
             serr = tmp[1];
             cmd = pre ~ " " ~ tmp[2..$].join(" ");
         }
     }
 
     // detect redirect to stdout
-    if (auto arr = cmd.findSplit(">")) {
+    if (auto arr = cmd.findSplit(">"))
+    {
         auto pre = arr[0].stripRight;
         assert(arr[1] == ">");
         auto post = arr[2].stripLeft;
@@ -68,11 +74,15 @@ EOS", class_, cwlVersion, baseCommand);
 
     string[] arguments, inputs;
     bool opt_arg;
-    foreach(i, a; args[1..$]) {
-        if (a.startsWith("-")) {
+    foreach(i, a; args[1..$])
+    {
+        if (a.startsWith("-"))
+        {
             arguments ~= format("  - %s", a);
             opt_arg = true;
-        } else {
+        }
+        else
+        {
             // guess type from option name
             immutable type = guess_type(opt_arg ? args[i-1]: "", a);
             immutable param = a.to_input_param;
@@ -88,13 +98,15 @@ EOS", param, type);
     cwl ~= "inputs:" ~ (inputs.empty ? " []\n" : "\n"~inputs.join);
 
     string[] outputs;
-    if (!stdout_.empty) {
+    if (!stdout_.empty)
+    {
         outputs ~= q"EOS
   - id: out
     type: stdout
 EOS";
     }
-    if (!stderr_.empty) {
+    if (!stderr_.empty)
+    {
         outputs ~= q"EOS
   - id: err
     type: stderr
@@ -102,10 +114,12 @@ EOS";
     }
     cwl ~= "outputs:" ~ (outputs.empty ? " []\n" : "\n"~outputs.join);
 
-    if (!stdout_.empty) {
+    if (!stdout_.empty)
+    {
         cwl ~= format("stdout: %s\n", stdout_);
     }
-    if (!stderr_.empty) {
+    if (!stderr_.empty)
+    {
         cwl ~= format("stderr: %s\n", stderr_);
     }
     return cwl;
@@ -133,7 +147,8 @@ do
 }
 
 ///
-unittest {
+unittest
+{
     assert("5".to_input_param == "_5");
     assert("3.14".to_input_param == "_3_14");
     assert("foobar.txt".to_input_param == "foobar_txt");
@@ -145,22 +160,31 @@ unittest {
 
 auto guess_type(string option, string value)
 {
-    if (option.endsWith("dir")) {
+    if (option.endsWith("dir"))
+    {
         return "Directory";
-    } else if (option.endsWith("file")) {
+    }
+    else if (option.endsWith("file"))
+    {
         return "File";
     }
-    if (value.match(IntRegex)) {
+    if (value.match(IntRegex))
+    {
         return "int";
-    } else if (value.match(DoubleRegex)) {
+    }
+    else if (value.match(DoubleRegex))
+    {
         return "double";
-    } else if (value.canFind(".")) {
+    }
+    else if (value.canFind("."))
+    {
         return "File";
     }
     return "Any";
 }
 
-unittest {
+unittest
+{
     assert("cat aaa.txt bbb.txt > output.txt".to_cwl,
         q"EOS
 class: CommandLineTool
@@ -182,7 +206,8 @@ EOS");
 }
 
 // #4
-unittest {
+unittest
+{
     assert("head -n 5 ccc.txt > output.txt".to_cwl,
         q"EOS
 class: CommandLineTool
