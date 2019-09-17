@@ -300,6 +300,8 @@ unittest
     assert("../hoge.txt".guessType == "File");
     // if it seems to be a path but no extensions, it will be a directory
     assert("/path/to/dir".guessType == "Directory");
+    // if the value seems to be a directory name (i.e. ends with `dir`), it will be a directory
+    assert("seems_dir".guessType == "Directory");
 
     // return `Any` if it cannot guess a type
     assert("13a".guessType == "Any");
