@@ -197,7 +197,7 @@ do
     }
     else
     {
-        return value.tr(".-", "_");
+        return value.baseName.tr(".-", "_");
     }
 }
 
@@ -214,6 +214,9 @@ unittest
 
     assert("-n".toInputParam == "n");
     assert("--option".toInputParam == "option");
+
+    assert("../relative/path/to/file.txt".toInputParam == "file_txt");
+    assert("/abspath/to/dir".toInputParam == "dir");
 }
 
 /**
@@ -229,6 +232,7 @@ auto guessType(string value, string option = "")
     {
         return "File";
     }
+
     if (value.match(IntRegex))
     {
         return "int";
@@ -237,8 +241,14 @@ auto guessType(string value, string option = "")
     {
         return "double";
     }
+    else if (value.canFind(dirSeparator))
+    {
+        // It will be an absolute path or a relative path
+        return value.baseName.canFind(".") ? "File" : "Directory";
+    }
     else if (value.canFind("."))
     {
+        // It will be a file in current directory
         return "File";
     }
     return "Any";
@@ -260,6 +270,9 @@ unittest
     assert("13.5".guessType == "double");
     // if the value seems to be a file with an extension, it will be a File
     assert("foobar.txt".guessType == "File");
+    assert("../hoge.txt".guessType == "File");
+    // if it seems to be a path but no extensions, it will be a directory
+    assert("/path/to/dir".guessType == "Directory");
 
     // return `Any` if it cannot guess a type
     assert("13a".guessType == "Any");
