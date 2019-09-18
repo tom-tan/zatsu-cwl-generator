@@ -337,7 +337,7 @@ unittest
     /* otherwise guess a type from its value */
     // if the value seems to be an integer, it will be an integer
     assert("13".guessType == "int");
-    // if the value seems to be a floating ppoint, it will be a double precision number
+    // if the value seems to be a floating point, it will be a double precision number
     assert("13.5".guessType == "double");
     // if the value seems to be a file with an extension, it will be a File
     assert("foobar.txt".guessType == "File");
