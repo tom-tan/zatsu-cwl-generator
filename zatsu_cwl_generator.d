@@ -334,7 +334,7 @@ unittest
     // if option ends with `file`, it will be a File
     assert("bar".guessType("--outfile") == "File");
 
-    /* otherwise guess a typpe from its value */
+    /* otherwise guess a type from its value */
     // if the value seems to be an integer, it will be an integer
     assert("13".guessType == "int");
     // if the value seems to be a floating ppoint, it will be a double precision number
