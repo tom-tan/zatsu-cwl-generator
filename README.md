@@ -1,6 +1,10 @@
 # zatsu-cwl-generator
 This is a simple CWL definition generator from given execution commands.
 
+# Requirements
+- [D compiler](https://dlang.org/download.html)
+  - I confirmed with `dmd` but it should work with other compilers such as ldc and gdc.
+
 # How to execute
 
 ```console
@@ -45,7 +49,7 @@ $ rdmd -main -unittest zatsu_cwl_generator.d
 # How to generate an internal document
 
 ```console
-dmd -Dddocs zatsu_cwl_generator.d
+$ dmd -Dddocs zatsu_cwl_generator.d
 ```
 
 You can see a HTML file in the `docs` directory.
