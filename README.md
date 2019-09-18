@@ -1,5 +1,5 @@
 # zatsu-cwl-generator
-This is a simple CWL definition generator from a given execution commands.
+This is a simple CWL definition generator from given execution commands.
 
 # How to execute
 
