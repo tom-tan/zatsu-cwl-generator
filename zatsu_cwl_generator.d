@@ -89,7 +89,7 @@ EOS"
     string prevOption;
     foreach(i, a; args[1..$])
     {
-        if (a.startsWith("-"))
+        if (a.startsWith("-") && a != "-")
         {
             arguments ~= format("  - %s", a);
             prevOption = a;
@@ -106,8 +106,8 @@ EOS"
             arguments ~= format("  - $(inputs.%s)", inParam);
             inputs ~= format(q"EOS
   - id: %s
-    type: %s
-EOS", inParam, seemsOut ? "string" : type);
+    type: %s%s
+EOS", inParam, seemsOut ? "string" : type, a == "-" ? "\n    streamable: true" : "");
             if (seemsOut)
             {
                 outputs ~= format(q"EOS
@@ -240,6 +240,34 @@ outputs:
 EOS");
 }
 
+/// use standard input
+unittest
+{
+    assert("samtools view -bS -".toCWL ==
+        q"EOS
+class: CommandLineTool
+cwlVersion: v1.0
+baseCommand: samtools
+arguments:
+  - $(inputs.view)
+  - -bS
+  - $(inputs.bS)
+inputs:
+  - id: view
+    type: Any
+  - id: bS
+    type: File
+    streamable: true
+outputs:
+  - id: all-for-debugging
+    type:
+      type: array
+      items: [File, Directory]
+    outputBinding:
+      glob: "*"
+EOS");
+}
+
 /**
  * Returns: a valid CWL input parameter id generated from `value`
  */
@@ -247,6 +275,11 @@ string toInputParam(string value)
 in(!value.empty)
 do
 {
+    if (value == "-")
+    {
+        return "stdin";
+    }
+
     if (value.startsWith("-"))
     {
         value = value.stripLeft("-");
@@ -282,6 +315,8 @@ unittest
 
     assert("../relative/path/to/file.txt".toInputParam == "file_txt");
     assert("/abspath/to/dir".toInputParam == "dir");
+
+    assert("-".toInputParam == "stdin");
 }
 
 /**
@@ -322,6 +357,10 @@ string guessType(string value, string option = "")
     {
         return "Directory";
     }
+    else if (value == "-")
+    {
+        return "File";
+    }
     return "Any";
 }
 
@@ -342,6 +381,8 @@ unittest
     // if the value seems to be a file with an extension, it will be a File
     assert("foobar.txt".guessType == "File");
     assert("../hoge.txt".guessType == "File");
+    // if the value is `"-"`, it will be a File
+    assert("-".guessType == "File");
     // if it seems to be a path but no extensions, it will be a directory
     assert("/path/to/dir".guessType == "Directory");
     // if the value seems to be a directory name (i.e. ends with `dir`), it will be a directory
@@ -354,6 +395,12 @@ unittest
 
 bool seemsOutput(string value, string option = "")
 {
+    // if the value is `"-"`, it should not be an output object
+    if (value == "-")
+    {
+        return false;
+    }
+
     // guess from `option`
     if (option == "-o")
     {
@@ -384,4 +431,8 @@ unittest
     assert("output.txt".seemsOutput);
     assert("outdir".seemsOutput);
     assert(!"input.txt".seemsOutput);
+
+    // if the value is `"-"`, it should not be an output object
+    assert(!"-".seemsOutput);
+    assert(!"-".seemsOutput("-o"));
 }
