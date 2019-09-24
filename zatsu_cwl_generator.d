@@ -3,8 +3,8 @@ import std;
 
 @safe:
 
-immutable IntRegex= ctRegex!r"^\d+$";
-immutable DoubleRegex = ctRegex!r"^\d+\.\d+$";
+private immutable IntRegex= ctRegex!r"^\d+$";
+private immutable DoubleRegex = ctRegex!r"^\d+\.\d+$";
 
 version(unittest) {}
 else
@@ -29,9 +29,9 @@ string toCWL(string cmd)
     // detect redirect to stderr
     if (auto arr = cmd.findSplit("2>"))
     {
-        auto pre = arr[0].stripRight;
+        immutable pre = arr[0].stripRight;
         assert(arr[1] == "2>");
-        auto post = arr[2].stripLeft;
+        immutable post = arr[2].stripLeft;
 
         auto tmp = post.split;
         enforce(!tmp.empty, "No file specified to be redirected stderr!");
@@ -50,7 +50,7 @@ string toCWL(string cmd)
     // detect redirect to stdout
     if (auto arr = cmd.findSplit(">"))
     {
-        auto pre = arr[0].stripRight;
+        immutable pre = arr[0].stripRight;
         assert(arr[1] == ">");
         auto post = arr[2].stripLeft;
 
@@ -393,6 +393,9 @@ unittest
     assert("unknown-value".guessType("--unknown-option") == "Any");
 }
 
+/**
+ * Returns: true if a given `value` seems to be an output object, false otherwise
+ */
 bool seemsOutput(string value, string option = "")
 {
     // if the value is `"-"`, it should not be an output object
@@ -419,15 +422,19 @@ bool seemsOutput(string value, string option = "")
     return false;
 }
 
+///
 unittest
 {
+    // if the option starts with `-o`, it seems to be an output object
     assert("aaa.txt".seemsOutput("-o"));
     assert(!"aaa.txt".seemsOutput("-a"));
 
+    // if the option starts with `--output`, it seems to be an output object
     assert("bbb.txt".seemsOutput("--output"));
     assert("bbb.txt".seemsOutput("--outdir"));
     assert(!"bbb.txt".seemsOutput("--auto"));
 
+    // if the value starts with `out`, it seems to be an output object
     assert("output.txt".seemsOutput);
     assert("outdir".seemsOutput);
     assert(!"input.txt".seemsOutput);
