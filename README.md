@@ -1,9 +1,11 @@
 # zatsu-cwl-generator
 This is a simple CWL definition generator from given execution commands.
 
-# Requirements
+# Build Requirements
+- [Visual Studio Code](https://code.visualstudio.com) (optional)
+  - This repository provides a development environment for [Visual Studio Code Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension
 - [D compiler](https://dlang.org/download.html)
-  - I confirmed with `dmd` but it should work with other compilers such as ldc and gdc.
+  - I confirmed with `dmd` and `ldc2` but it should work with other compilers such as `gdc`.
 
 # How to execute
 
@@ -35,7 +37,7 @@ stdout: output.txt
 or:
 
 ```console
-$ dmd zatsu_cwl_generator.d -of=zatsu_cwl_generator
+$ ldc2 zatsu_cwl_generator.d
 $ ./zatsu_cwl_generator "cat aaa.txt bbb.txt > output.txt"
 ...
 ```
