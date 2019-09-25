@@ -42,6 +42,24 @@ $ ./zatsu_cwl_generator "cat aaa.txt bbb.txt > output.txt"
 ...
 ```
 
+If you need a static linked binary, add `-mtriple=x86_64-alpine-linux-musl -static` to the build command:
+```console
+$ ldc2 zatsu_cwl_generator.d # for dynamic link (default)
+$ ldd zatsu_cwl_generator
+        linux-vdso.so.1 (0x00007ffde1327000)
+        librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007f83cf2d4000)
+        libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f83cf0d0000)
+        libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f83ceeb1000)
+        libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f83ceb13000)
+        libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f83ce8fb000)
+        libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f83ce50a000)
+        /lib64/ld-linux-x86-64.so.2 (0x00007f83cf718000)
+
+$ ldc2 -mtriple=x86_64-alpine-linux-musl -static zatsu_cwl_generator.d # for static link
+$ ldd zatu_cwl_generator
+        not a dynamic executable
+```
+
 # How to test this program
 
 ```console
@@ -51,7 +69,7 @@ $ rdmd -main -unittest zatsu_cwl_generator.d
 # How to generate an internal document
 
 ```console
-$ dmd -Dddocs zatsu_cwl_generator.d
+$ ldc2 -Dddocs zatsu_cwl_generator.d
 ```
 
 You can see a HTML file in the `docs` directory.
