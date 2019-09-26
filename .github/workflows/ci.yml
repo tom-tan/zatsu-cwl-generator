@@ -11,8 +11,8 @@ jobs:
       run: docker build .devcontainer -f .devcontainer/Dockerfile -t ldc-musl
     - name: Run unittest
       run: docker run --rm -v $PWD:/workdir --workdir /workdir ldc-musl rdmd -main -unittest zatsu_cwl_generator.d
-#    - name: Build the Docker image
-#      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+    - name: Build the Docker image
+      run: docker build . -f Dockerfile -t ttanjo/zatsu-cwl-generator:latest
 
   build-mac:
     runs-on: macOS-latest
@@ -22,3 +22,5 @@ jobs:
       run: brew install ldc
     - name: Run unittest
       run: ldc2 -main -unittest -run zatsu_cwl_generator.d
+    - name: Build the binary
+      run: ldc2 -O -release zatsu_cwl_generator.d -ofzatsu-cwl-generator

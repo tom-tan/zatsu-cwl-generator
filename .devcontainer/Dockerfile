@@ -1,5 +1,7 @@
 FROM dlang2/ldc-ubuntu:1.17.0 AS build
 
+LABEL maintainer "Tomoya Tanjo <ttanjo@gmail.com>"
+
 ARG DEBCONF_NOWARNINGS=yes
 
 RUN apt-get update
