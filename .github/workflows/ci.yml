@@ -19,6 +19,12 @@ jobs:
       with:
         name: zatsu-cwl-generator-linux-x86_64
         path: zatsu-cwl-generator
+    - name: Upload the Docker image to Dockerhub
+      run: |
+        echo $DOCKER_PASS | docker login -u ttanjo --password-stdin
+        docker push ttanjo/zatsu-cwl-generator:latest
+      with:
+        DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
 
   build-mac:
     runs-on: macOS-latest
