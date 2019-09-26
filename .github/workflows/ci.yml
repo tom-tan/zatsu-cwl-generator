@@ -23,7 +23,7 @@ jobs:
       run: |
         echo $DOCKER_PASS | docker login -u ttanjo --password-stdin
         docker push ttanjo/zatsu-cwl-generator:latest
-      with:
+      env:
         DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
 
   build-mac:
