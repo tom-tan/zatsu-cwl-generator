@@ -1,0 +1,25 @@
+name: Test and build
+
+on: [push]
+
+jobs:
+
+  build-linux: 
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Buld dev image
+      run: docker build .devcontaner -f .devcontainer/Dockerfile -t ldc-musl
+    - name: Run unittest
+      run: docker run --rm -it -v $PWD:/workdir --workdir /workdir ldc-musl rdmd -main -unittest zatsu_cwl_generator.d
+#    - name: Build the Docker image
+#      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+
+  build-mac:
+    runs-on: macOS-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: install ldc
+      run: brew install ldc
+    - name: Run unittest
+      run: rdmd -main -unittest zatsu_cwl_generator.d
