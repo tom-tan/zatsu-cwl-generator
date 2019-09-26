@@ -1,4 +1,6 @@
 # zatsu-cwl-generator
+[![Actions Status](https://github.com/tom-tan/zatsu-cwl-generator/workflows/Actions/badge.svg)](https://github.com/tom-tan/zatsu-cwl-generator/actions)
+
 This is a simple CWL definition generator from given execution commands.
 
 # Build Requirements
