@@ -13,7 +13,7 @@ This is a simple CWL definition generator from given execution commands.
 
 There are several ways to execute it.
 
-- Using [Docker container](https://hub.docker.com/r/ttanjo/zatsu-cwl-generator)
+- Use [Docker container](https://hub.docker.com/r/ttanjo/zatsu-cwl-generator)
 
   ```console
   $ docker run --rm zatsu-cwl-generator:latest "cat aaa.txt bbb.txt > output.txt"
@@ -22,7 +22,7 @@ There are several ways to execute it.
 
 - Download the latest binary from [CI](https://github.com/tom-tan/zatsu-cwl-generator/actions) and use it
 
-- Using `rdmd`
+- Use `rdmd`
   ```console
   $ ./zatsu_cwl_generator.d "cat aaa.txt bbb.txt > output.txt"
   #!/usr/bin/env cwl-runner
