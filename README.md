@@ -25,6 +25,8 @@ There are several ways to execute it.
 - Using `rdmd`
   ```console
   $ ./zatsu_cwl_generator.d "cat aaa.txt bbb.txt > output.txt"
+  #!/usr/bin/env cwl-runner
+  # Generated from: cat aaa.txt bbb.txt > output.txt
   class: CommandLineTool
   cwlVersion: v1.0
   baseCommand: cat

@@ -23,6 +23,7 @@ void main(string[] args)
  */
 string toCWL(string cmd)
 {
+    immutable original_cmd = cmd;
     auto sout = "";
     auto serr = "";
 
@@ -70,10 +71,12 @@ string toCWL(string cmd)
     immutable baseCommand = args[0];
 
     auto cwl = format(q"EOS
+#!/usr/bin/env cwl-runner
+# Generated from: %s
 class: %s
 cwlVersion: %s
 baseCommand: %s
-EOS", class_, cwlVersion, baseCommand);
+EOS", original_cmd, class_, cwlVersion, baseCommand);
 
     string[] arguments, inputs;
     string[] outputs = [
@@ -155,6 +158,8 @@ unittest
 {
     assert("cat aaa.txt bbb.txt > output.txt".toCWL ==
         q"EOS
+#!/usr/bin/env cwl-runner
+# Generated from: cat aaa.txt bbb.txt > output.txt
 class: CommandLineTool
 cwlVersion: v1.0
 baseCommand: cat
@@ -184,6 +189,8 @@ unittest
 {
     assert("head -n 5 ccc.txt > output.txt".toCWL ==
         q"EOS
+#!/usr/bin/env cwl-runner
+# Generated from: head -n 5 ccc.txt > output.txt
 class: CommandLineTool
 cwlVersion: v1.0
 baseCommand: head
@@ -214,6 +221,8 @@ unittest
 {
     assert("gcc -o sample.exe sample.c".toCWL ==
            q"EOS
+#!/usr/bin/env cwl-runner
+# Generated from: gcc -o sample.exe sample.c
 class: CommandLineTool
 cwlVersion: v1.0
 baseCommand: gcc
@@ -245,6 +254,8 @@ unittest
 {
     assert("samtools view -bS -".toCWL ==
         q"EOS
+#!/usr/bin/env cwl-runner
+# Generated from: samtools view -bS -
 class: CommandLineTool
 cwlVersion: v1.0
 baseCommand: samtools
