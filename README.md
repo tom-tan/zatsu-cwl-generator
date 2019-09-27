@@ -20,7 +20,7 @@ There are several ways to execute it.
   ...
   ```
 
-- Download the latest binary from [CI](https://github.com/tom-tan/zatsu-cwl-generator/actions)  and use it
+- Download the latest binary from [CI](https://github.com/tom-tan/zatsu-cwl-generator/actions) and use it
 
 - Using `rdmd`
   ```console
