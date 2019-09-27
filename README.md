@@ -11,38 +11,49 @@ This is a simple CWL definition generator from given execution commands.
 
 # How to execute
 
-```console
-$ ./zatsu_cwl_generator.d "cat aaa.txt bbb.txt > output.txt"
-class: CommandLineTool
-cwlVersion: v1.0
-baseCommand: cat
-arguments:
-  - $(inputs.aaa_txt)
-  - $(inputs.bbb_txt)
-inputs:
-  - id: aaa_txt
-    type: File
-  - id: bbb_txt
-    type: File
-outputs:
-  - id: all-for-debugging
-    type:
-      type: array
-      items: [File, Directory]
-    outputBinding:
-      glob: "*"
-  - id: out
-    type: stdout
-stdout: output.txt
-```
+There are several ways to execute it.
 
-or:
+- Using [Docker container](https://hub.docker.com/r/ttanjo/zatsu-cwl-generator)
 
-```console
-$ ldc2 zatsu_cwl_generator.d
-$ ./zatsu_cwl_generator "cat aaa.txt bbb.txt > output.txt"
-...
-```
+  ```console
+  $ docker run --rm zatsu-cwl-generator:latest "cat aaa.txt bbb.txt > output.txt"
+  ...
+  ```
+
+- Download the latest binary from [CI](https://github.com/tom-tan/zatsu-cwl-generator/actions)  and use it
+
+- Using `rdmd`
+  ```console
+  $ ./zatsu_cwl_generator.d "cat aaa.txt bbb.txt > output.txt"
+  class: CommandLineTool
+  cwlVersion: v1.0
+  baseCommand: cat
+  arguments:
+    - $(inputs.aaa_txt)
+    - $(inputs.bbb_txt)
+  inputs:
+    - id: aaa_txt
+      type: File
+    - id: bbb_txt
+      type: File
+  outputs:
+    - id: all-for-debugging
+      type:
+        type: array
+        items: [File, Directory]
+      outputBinding:
+        glob: "*"
+    - id: out
+      type: stdout
+  stdout: output.txt
+  ```
+
+- Build a binary and use it
+  ```console
+  $ ldc2 zatsu_cwl_generator.d
+  $ ./zatsu_cwl_generator "cat aaa.txt bbb.txt > output.txt"
+  ...
+  ```
 
 If you need a static linked binary, add `-mtriple=x86_64-alpine-linux-musl -static` to the build command:
 ```console
