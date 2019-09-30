@@ -10,7 +10,7 @@ jobs:
     - name: Buld dev image
       run: docker build . -f Dockerfile.dev -t ldc-musl
     - name: Run unittest
-      run: docker run --rm -v $PWD:/workdir --workdir /workdir ldc-musl rdmd -main -unittest zatsu_cwl_generator.d
+      run: docker run --rm -v $PWD:/workdir --workdir /workdir ldc-musl ldc2 -main -unittest -run zatsu_cwl_generator.d
     - name: Build the binary and Docker image
       run: |
         docker run --rm -v $PWD:/workdir --workdir /workdir ldc-musl ldc2 -mtriple=x86_64-alpine-linux-musl -static -O -release zatsu_cwl_generator.d -ofzatsu-cwl-generator
