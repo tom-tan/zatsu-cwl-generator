@@ -60,7 +60,7 @@ jobs:
       - name: print values
         run: echo $GITHUB_CONTEXT
         env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}        
+          GITHUB_CONTEXT: ${{ toJson(github) }}
       - name: create release
         uses: softprops/action-gh-release@v1
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
