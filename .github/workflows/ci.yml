@@ -8,7 +8,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Buld dev image
-      run: docker build .devcontainer -f .devcontainer/Dockerfile -t ldc-musl
+      run: docker build . -f Dockerfile.dev -t ldc-musl
     - name: Run unittest
       run: docker run --rm -v $PWD:/workdir --workdir /workdir ldc-musl rdmd -main -unittest zatsu_cwl_generator.d
     - name: Build the binary and Docker image

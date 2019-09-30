@@ -1,5 +1,5 @@
 {
-  "dockerFile": "Dockerfile",
+  "dockerFile": "../Dockerfile.dev",
   "postCreateCommand": "apt-get install -y git",
   "extensions": ["webfreak.code-d", "ms-vsliveshare.vsliveshare"],
   "settings": {
