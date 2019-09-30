@@ -26,7 +26,7 @@ jobs:
         name: zatsu-cwl-generator-linux-x86_64
         path: zatsu-cwl-generator
     - name: Upload the Docker image to Dockerhub
-#      if: github.event_name == 'push' && github.ref == branch == master
+      if: github.event_name == 'push'
       run: |
         echo $DOCKER_TOKEN | docker login -u ttanjo --password-stdin
         docker push ttanjo/zatsu-cwl-generator:latest
@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: create release
-#        if: github.event_name == 'push' && master && tag
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
         run: echo $GITHUB_REF
           # create with comments
           # upload artifacts
