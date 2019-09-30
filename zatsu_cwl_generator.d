@@ -140,7 +140,8 @@ EOS";
     type: stderr
 EOS";
     }
-    cwl ~= "outputs:" ~ (outputs.empty ? " []\n" : "\n"~outputs.join);
+    assert(!outputs.empty);
+    cwl ~= "outputs:\n"~outputs.join;
 
     if (!stdout_.empty)
     {
