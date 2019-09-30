@@ -78,7 +78,7 @@ $ ldd zatu_cwl_generator
 # How to test this program
 
 ```console
-$ rdmd -main -unittest -run zatsu_cwl_generator.d
+$ rdmd -main -unittest zatsu_cwl_generator.d
 ```
 
 # How to generate an internal document
