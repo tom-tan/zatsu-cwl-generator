@@ -54,6 +54,9 @@ jobs:
     needs: [build-docker, build-mac]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
       - name: print values
         run: echo $GITHUB_EVENT_NAME $GITHUB_REF
       - name: create release
