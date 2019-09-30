@@ -3,6 +3,8 @@ import std;
 
 @safe:
 
+/// Version of zatsu-cwl-generator
+enum Version = "v0.0.0-beta0";
 private immutable IntRegex= ctRegex!r"^\d+$";
 private immutable DoubleRegex = ctRegex!r"^\d+\.\d+$";
 
@@ -12,7 +14,8 @@ void main(string[] args)
 {
     if (args.length != 2)
     {
-        writefln("Usage: %s <commandline>", args[0]);
+        writefln("%s %s", args[0].baseName, Version);
+        writefln("Usage: %s <commandline>", args[0].baseName);
         return;
     }
     args[1].toCWL.write;
