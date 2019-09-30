@@ -55,11 +55,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: create release
+        uses: softprops/action-gh-release@v1
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-        run: |
-          echo $GITHUB_REF
-          # create with comments
-          # upload artifacts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: upload artifacts
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        uses: skx/github-action-publish-binaries@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: 'zatsu-cwl-generator-*'
       - name: create tagged docker image
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
         run: |
