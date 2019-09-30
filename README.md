@@ -17,14 +17,6 @@ There are several ways to execute it.
 
   ```console
   $ docker run --rm zatsu-cwl-generator:latest "cat aaa.txt bbb.txt > output.txt"
-  ...
-  ```
-
-- Download the latest binary from [CI](https://github.com/tom-tan/zatsu-cwl-generator/actions) and use it
-
-- Use `rdmd`
-  ```console
-  $ ./zatsu_cwl_generator.d "cat aaa.txt bbb.txt > output.txt"
   #!/usr/bin/env cwl-runner
   # Generated from: cat aaa.txt bbb.txt > output.txt
   class: CommandLineTool
@@ -48,6 +40,14 @@ There are several ways to execute it.
     - id: out
       type: stdout
   stdout: output.txt
+  ```
+
+- Download the latest binary from [CI](https://github.com/tom-tan/zatsu-cwl-generator/actions) and use it
+
+- Use `rdmd`
+  ```console
+  $ ./zatsu_cwl_generator.d "cat aaa.txt bbb.txt > output.txt"
+  ...
   ```
 
 - Build a binary and use it
