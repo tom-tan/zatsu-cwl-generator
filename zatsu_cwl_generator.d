@@ -114,10 +114,10 @@ EOS", inParam, seemsOut ? "string" : type, a == "-" ? "\n    streamable: true" :
             if (seemsOut)
             {
                 outputs ~= format(q"EOS
-  - id: %s
-    type: %s
-    outputBinding:
-      glob: "$(inputs.%s)"
+#  - id: %s
+#    type: %s
+#    outputBinding:
+#      glob: "$(inputs.%s)"
 EOS", outParam, type, inParam);
             }
             prevOption = "";
@@ -242,10 +242,10 @@ outputs:
       items: [File, Directory]
     outputBinding:
       glob: "*"
-  - id: o
-    type: File
-    outputBinding:
-      glob: "$(inputs.o_name)"
+#  - id: o
+#    type: File
+#    outputBinding:
+#      glob: "$(inputs.o_name)"
 EOS");
 }
 
