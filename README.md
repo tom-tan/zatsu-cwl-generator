@@ -16,7 +16,7 @@ There are several ways to execute it.
 - Use [Docker container](https://hub.docker.com/r/ttanjo/zatsu-cwl-generator)
 
   ```console
-  $ docker run --rm zatsu-cwl-generator:latest "cat aaa.txt bbb.txt > output.txt"
+  $ docker run --rm ttanjo/zatsu-cwl-generator:latest "cat aaa.txt bbb.txt > output.txt"
   #!/usr/bin/env cwl-runner
   # Generated from: cat aaa.txt bbb.txt > output.txt
   class: CommandLineTool
