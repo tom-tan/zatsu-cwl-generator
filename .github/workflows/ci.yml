@@ -3,52 +3,52 @@ name: Actions
 on:
   push:
     branches:
-    - master
+      - master
   pull_request: {}
 
 jobs:
   build-docker:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
-    - name: Buld dev image
-      run: docker build . -f Dockerfile.dev -t ldc-musl
-    - name: Run unittest
-      run: docker run --rm -v $PWD:/workdir --workdir /workdir ldc-musl ldc2 -main -unittest -run zatsu_cwl_generator.d
-    - name: Build the binary and Docker image
-      run: |
-        docker run --rm -v $PWD:/workdir --workdir /workdir ldc-musl ldc2 -mtriple=x86_64-alpine-linux-musl -static -O -release zatsu_cwl_generator.d -ofzatsu-cwl-generator
-        docker build . -f Dockerfile -t ttanjo/zatsu-cwl-generator:latest
-    - uses: actions/upload-artifact@v1
-      with:
-        name: zatsu-cwl-generator-linux-x86_64
-        path: zatsu-cwl-generator
-    - name: Upload the Docker image to Dockerhub
-      if: github.event_name == 'push'
-      run: |
-        echo $DOCKER_TOKEN | docker login -u ttanjo --password-stdin
-        docker push ttanjo/zatsu-cwl-generator:latest
-      env:
-        DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+      - name: Buld dev image
+        run: docker build . -f Dockerfile.dev -t ldc-musl
+      - name: Run unittest
+        run: docker run --rm -v $PWD:/workdir --workdir /workdir ldc-musl ldc2 -main -unittest -run zatsu_cwl_generator.d
+      - name: Build the binary and Docker image
+        run: |
+          docker run --rm -v $PWD:/workdir --workdir /workdir ldc-musl ldc2 -mtriple=x86_64-alpine-linux-musl -static -O -release zatsu_cwl_generator.d -ofzatsu-cwl-generator
+          docker build . -f Dockerfile -t ttanjo/zatsu-cwl-generator:latest
+      - uses: actions/upload-artifact@v1
+        with:
+          name: zatsu-cwl-generator-linux-x86_64
+          path: zatsu-cwl-generator
+      - name: Upload the Docker image to Dockerhub
+        if: github.event_name == 'push'
+        run: |
+          echo $DOCKER_TOKEN | docker login -u ttanjo --password-stdin
+          docker push ttanjo/zatsu-cwl-generator:latest
+        env:
+          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 
   build-mac:
     runs-on: macOS-latest
     steps:
-    - uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
-    - name: install ldc
-      run: brew install ldc
-    - name: Run unittest
-      run: ldc2 -main -unittest -run zatsu_cwl_generator.d
-    - name: Build the binary
-      run: ldc2 -O -release zatsu_cwl_generator.d -ofzatsu-cwl-generator
-    - uses: actions/upload-artifact@v1
-      with:
-        name: zatsu-cwl-generator-macos
-        path: zatsu-cwl-generator
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+      - name: install ldc
+        run: brew install ldc
+      - name: Run unittest
+        run: ldc2 -main -unittest -run zatsu_cwl_generator.d
+      - name: Build the binary
+        run: ldc2 -O -release zatsu_cwl_generator.d -ofzatsu-cwl-generator
+      - uses: actions/upload-artifact@v1
+        with:
+          name: zatsu-cwl-generator-macos
+          path: zatsu-cwl-generator
 
   release:
     needs: [build-docker, build-mac]
@@ -56,13 +56,17 @@ jobs:
     steps:
       - name: create release
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-        run: echo $GITHUB_REF
+        run: |
+          echo $GITHUB_REF
           # create with comments
           # upload artifacts
-#      - name: create tagged docker image
-#        if: master && tag
-#        run: |
-#          # docker pull ttanjo/zatsu-cwl-generator
-#          # echo $DOCKER_TOKEN | docker login -u ttanjo --password-stdin
-#          # docker tag ttanjo/zatsu-cwl-generator:latest ttanjo/zatsu-cwl-generator:$tag
-#          # docker push ttanjo/zatsu-cwl-generator:$tag
+      - name: create tagged docker image
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        run: |
+          tag=$(basename $GITHUB_REF)
+          docker pull ttanjo/zatsu-cwl-generator
+          echo $DOCKER_TOKEN | docker login -u ttanjo --password-stdin
+          docker tag ttanjo/zatsu-cwl-generator:latest ttanjo/zatsu-cwl-generator:$tag
+          docker push ttanjo/zatsu-cwl-generator:$tag
+        env:
+          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
