@@ -31,8 +31,10 @@ string toCWL(string cmd)
     if (auto arr = cmd.findSplit("2>"))
     {
         immutable pre = arr[0].stripRight;
+        enforce(!pre.empty, "Commandline should be specified");
         assert(arr[1] == "2>");
         immutable post = arr[2].stripLeft;
+        enforce(!post.empty, "A file for stderr should be specified");
 
         auto tmp = post.split;
         enforce(!tmp.empty, "No file specified to be redirected stderr!");
@@ -52,9 +54,12 @@ string toCWL(string cmd)
     if (auto arr = cmd.findSplit(">"))
     {
         immutable pre = arr[0].stripRight;
+        enforce(!pre.empty, "Commandline should be specified");
         assert(arr[1] == ">");
         auto post = arr[2].stripLeft;
+        enforce(!post.empty, "A file for stdout should be specified");
 
+        enforce(pre[$-1] != '&' && post[0] != '&', "`&>` and `>&` are not supported");
         enforce(post.split.length == 1, "One file should be allowed after `>`!");
         sout = post;
         cmd = pre;
