@@ -1,6 +1,6 @@
 {
   "dockerFile": "../Dockerfile.dev",
-  "postCreateCommand": "apt-get install -y git",
+  "postCreateCommand": "apt-get install -y --no-install-recommends git",
   "extensions": ["webfreak.code-d", "ms-vsliveshare.vsliveshare"],
   "settings": {
     "d.dmdPath": "ldmd2",
