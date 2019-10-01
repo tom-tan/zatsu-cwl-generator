@@ -59,7 +59,7 @@ jobs:
           fetch-depth: 1
       - name: print values
         run: |
-          git describe
+          git describe 
           echo $?
       - name: create release
         uses: softprops/action-gh-release@v1
