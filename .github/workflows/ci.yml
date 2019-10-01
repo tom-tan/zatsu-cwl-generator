@@ -14,7 +14,7 @@ jobs:
         with:
           fetch-depth: 1
       - name: Buld dev image
-        run: docker build . -f Dockerfile.dev -t ldc-musl
+        run: docker build . -f dev.Dockerfile -t ldc-musl
       - name: Run unittest
         run: docker run --rm -v $PWD:/workdir --workdir /workdir ldc-musl ldc2 -main -unittest -run zatsu-cwl-generator.d
       - name: Build the binary and Docker image
@@ -56,7 +56,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
         with:
-          fetch-depth: 1 
+          fetch-depth: 1
       - name: print values
         run: echo $GITHUB_CONTEXT
         env:
