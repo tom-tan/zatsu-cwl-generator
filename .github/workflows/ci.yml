@@ -16,10 +16,10 @@ jobs:
       - name: Buld dev image
         run: docker build . -f Dockerfile.dev -t ldc-musl
       - name: Run unittest
-        run: docker run --rm -v $PWD:/workdir --workdir /workdir ldc-musl ldc2 -main -unittest -run zatsu_cwl_generator.d
+        run: docker run --rm -v $PWD:/workdir --workdir /workdir ldc-musl ldc2 -main -unittest -run zatsu-cwl-generator.d
       - name: Build the binary and Docker image
         run: |
-          docker run --rm -v $PWD:/workdir --workdir /workdir ldc-musl ldc2 -mtriple=x86_64-alpine-linux-musl -static -O -release zatsu_cwl_generator.d -ofzatsu-cwl-generator
+          docker run --rm -v $PWD:/workdir --workdir /workdir ldc-musl ldc2 -mtriple=x86_64-alpine-linux-musl -static -O -release zatsu-cwl-generator.d
           docker build . -f Dockerfile -t ttanjo/zatsu-cwl-generator:latest
       - uses: actions/upload-artifact@v1
         with:
@@ -42,9 +42,9 @@ jobs:
       - name: install ldc
         run: brew install ldc
       - name: Run unittest
-        run: ldc2 -main -unittest -run zatsu_cwl_generator.d
+        run: ldc2 -main -unittest -run zatsu-cwl-generator.d
       - name: Build the binary
-        run: ldc2 -O -release zatsu_cwl_generator.d -ofzatsu-cwl-generator
+        run: ldc2 -O -release zatsu-cwl-generator.d
       - uses: actions/upload-artifact@v1
         with:
           name: zatsu-cwl-generator-macos

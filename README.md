@@ -46,21 +46,21 @@ There are several ways to execute it.
 
 - Use `rdmd`
   ```console
-  $ ./zatsu_cwl_generator.d "cat aaa.txt bbb.txt > output.txt"
+  $ ./zatsu-cwl-generator.d "cat aaa.txt bbb.txt > output.txt"
   ...
   ```
 
 - Build a binary and use it
   ```console
-  $ ldc2 zatsu_cwl_generator.d
-  $ ./zatsu_cwl_generator "cat aaa.txt bbb.txt > output.txt"
+  $ ldc2 zatsu-cwl-generator.d
+  $ ./zatsu-cwl-generator "cat aaa.txt bbb.txt > output.txt"
   ...
   ```
 
 If you need a static linked binary, add `-mtriple=x86_64-alpine-linux-musl -static` to the build command:
 ```console
-$ ldc2 zatsu_cwl_generator.d # for dynamic link (default)
-$ ldd zatsu_cwl_generator
+$ ldc2 zatsu-cwl-generator.d # for dynamic link (default)
+$ ldd zatsu-cwl-generator
         linux-vdso.so.1 (0x00007ffde1327000)
         librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007f83cf2d4000)
         libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f83cf0d0000)
@@ -70,21 +70,21 @@ $ ldd zatsu_cwl_generator
         libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f83ce50a000)
         /lib64/ld-linux-x86-64.so.2 (0x00007f83cf718000)
 
-$ ldc2 -mtriple=x86_64-alpine-linux-musl -static zatsu_cwl_generator.d # for static link
-$ ldd zatu_cwl_generator
+$ ldc2 -mtriple=x86_64-alpine-linux-musl -static zatsu-cwl-generator.d # for static link
+$ ldd zatu-cwl-generator
         not a dynamic executable
 ```
 
 # How to test this program
 
 ```console
-$ rdmd -main -unittest zatsu_cwl_generator.d
+$ rdmd -main -unittest zatsu-cwl-generator.d
 ```
 
 # How to generate an internal document
 
 ```console
-$ ldc2 -Dddocs zatsu_cwl_generator.d
+$ ldc2 -Dddocs zatsu-cwl-generator.d
 ```
 
 You can see a HTML file in the `docs` directory.

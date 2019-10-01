@@ -1,4 +1,5 @@
 #!/usr/bin/env rdmd
+module zatsu_cwl_generator;
 import std;
 
 @safe:
