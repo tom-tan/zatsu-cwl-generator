@@ -56,27 +56,36 @@ jobs:
   release:
     needs: [build-docker, build-mac]
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
     steps:
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
-        if: startsWith(github.ref, 'refs/tags/')
+#        if: startsWith(github.ref, 'refs/tags/')
+      - name: download binary for mac
+        uses: actions/download-artifact@v1.0.0
+        with:
+          name: zatsu-cwl-generator-macos
+      - name: download binary for Linux
+        uses: actions/download-artifact@v1.0.0
+        with:
+          name: zatsu-cwl-generator-linux-x86_64
       - name: listing files
         run: ls
       - name: create release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
+#        if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: upload artifacts
-        if: startsWith(github.ref, 'refs/tags/')
+#        if: startsWith(github.ref, 'refs/tags/')
         uses: skx/github-action-publish-binaries@release-0.7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           args: 'zatsu-cwl-generator-*'
       - name: create tagged docker image
-        if: startsWith(github.ref, 'refs/tags/')
+#        if: startsWith(github.ref, 'refs/tags/')
         run: |
           tag="${GITHUB_REF##*/}"
           docker pull ttanjo/zatsu-cwl-generator
