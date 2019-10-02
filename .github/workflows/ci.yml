@@ -58,7 +58,9 @@ jobs:
         with:
           fetch-depth: 1
       - name: check tag
-        run: git describe 2> /dev/null
+        run: |
+          echo $GITHUB_REF
+          git describe 2> /dev/null
       - name: create release
         uses: softprops/action-gh-release@v1
         if: github.event_name == 'push' && success()
