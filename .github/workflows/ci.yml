@@ -50,7 +50,7 @@ jobs:
         run: ldc2 -O -release zatsu-cwl-generator.d
       - uses: actions/upload-artifact@v1
         with:
-          name: zatsu-cwl-generator-macos
+          name: zatsu-cwl-generator-osx-x86_64
           path: zatsu-cwl-generator
 
   release:
@@ -61,31 +61,37 @@ jobs:
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
-#        if: startsWith(github.ref, 'refs/tags/')
-      - name: download binary for mac
+      - name: download binary for macOS
         uses: actions/download-artifact@v1.0.0
         with:
-          name: zatsu-cwl-generator-macos
+          name: zatsu-cwl-generator-osx-x86_64
+      - name: archive binary for macOS
+        run: |
+          ver="${GITHUB_REF##*/}"
+          mv zatsu-cwl-generator-osx-x86_64 zatsu-cwl-generator
+          tar Jcf zatsu-cwl-generator-${ver}-osx-x86_64.tar.xz zatsu-cwl-generator
       - name: download binary for Linux
         uses: actions/download-artifact@v1.0.0
         with:
           name: zatsu-cwl-generator-linux-x86_64
+      - name: archive binary for Linux
+        run: |
+          ver="${GITHUB_REF##*/}"
+          mv zatsu-cwl-generator-linux-x86_64 zatsu-cwl-generator
+          tar Jcf zatsu-cwl-generator-${ver}-linux-x86_64.tar.xz zatsu-cwl-generator
       - name: listing files
         run: ls
       - name: create release
         uses: softprops/action-gh-release@v1
-#        if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: upload artifacts
-#        if: startsWith(github.ref, 'refs/tags/')
         uses: skx/github-action-publish-binaries@release-0.7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: 'zatsu-cwl-generator-*'
+          args: 'zatsu-cwl-generator-*.tar.xz'
       - name: create tagged docker image
-#        if: startsWith(github.ref, 'refs/tags/')
         run: |
           tag="${GITHUB_REF##*/}"
           docker pull ttanjo/zatsu-cwl-generator
