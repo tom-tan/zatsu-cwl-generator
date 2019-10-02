@@ -61,10 +61,8 @@ jobs:
         with:
           fetch-depth: 1
         if: startsWith(github.ref, 'refs/tags/')
-      - name: check tag
-        run: |
-          echo $GITHUB_REF
-          git describe 2> /dev/null
+      - name: listing files
+        run: ls
       - name: create release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
