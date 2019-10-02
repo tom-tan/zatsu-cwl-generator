@@ -74,7 +74,7 @@ jobs:
       - name: create tagged docker image
         if: github.event_name == 'push' && success()
         run: |
-          tag=$(basename $GITHUB_REF)
+          tag=$(git describe)
           docker pull ttanjo/zatsu-cwl-generator
           echo $DOCKER_TOKEN | docker login -u ttanjo --password-stdin
           docker tag ttanjo/zatsu-cwl-generator:latest ttanjo/zatsu-cwl-generator:$tag
