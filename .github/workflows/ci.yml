@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - v*
   pull_request: {}
 
 jobs:
@@ -57,26 +59,27 @@ jobs:
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
       - name: check tag
         run: |
           echo $GITHUB_REF
           git describe 2> /dev/null
       - name: create release
         uses: softprops/action-gh-release@v1
-        if: github.event_name == 'push' && success()
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: upload artifacts
-        if: github.event_name == 'push' && success()
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
         uses: skx/github-action-publish-binaries@release-0.7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           args: 'zatsu-cwl-generator-*'
       - name: create tagged docker image
-        if: github.event_name == 'push' && success()
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
         run: |
-          tag=$(git describe)
+          tag=$(basename $GITHUB_REF)
           docker pull ttanjo/zatsu-cwl-generator
           echo $DOCKER_TOKEN | docker login -u ttanjo --password-stdin
           docker tag ttanjo/zatsu-cwl-generator:latest ttanjo/zatsu-cwl-generator:$tag
