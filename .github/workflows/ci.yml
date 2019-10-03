@@ -57,6 +57,8 @@ jobs:
     needs: [build-docker, build-mac]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
+    env:
+      - VER: "${GITHUB_REF##*/}"
     steps:
       - uses: actions/checkout@v1
         with:
@@ -87,14 +89,14 @@ jobs:
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: zatsu-cwl-generator-*-osx-x86_64.tar.xz
+          file: zatsu-cwl-generator-${VER}-osx-x86_64.tar.xz
           asset_name: macOSX binary
           tag: ${{ github.ref }}
       - name: upload artifact for Linux
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: zatsu-cwl-generator-*-linux-x86_64.tar.xz
+          file: zatsu-cwl-generator-${VER}-linux-x86_64.tar.xz
           asset_name: Linux binary
           tag: ${{ github.ref }}
       - name: create tagged docker image
