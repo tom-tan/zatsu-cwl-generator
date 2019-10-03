@@ -84,14 +84,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: upload artifact for macOS
-        uses: svenstaro/upload-release-action@v1.0.1
+        uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: zatsu-cwl-generator-*-osx-x86_64.tar.xz
           asset_name: macOSX binary
           tag: ${{ github.ref }}
       - name: upload artifact for Linux
-        uses: svenstaro/upload-release-action@v1.0.1
+        uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: zatsu-cwl-generator-*-linux-x86_64.tar.xz
