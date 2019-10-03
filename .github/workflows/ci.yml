@@ -29,7 +29,7 @@ jobs:
           name: zatsu-cwl-generator-linux-x86_64
           path: zatsu-cwl-generator
       - name: Upload the Docker image to Dockerhub
-        if: github.event_name == 'push'
+        if: success()
         run: |
           echo $DOCKER_TOKEN | docker login -u ttanjo --password-stdin
           docker push ttanjo/zatsu-cwl-generator:latest
@@ -79,18 +79,24 @@ jobs:
           ver="${GITHUB_REF##*/}"
           mv zatsu-cwl-generator-linux-x86_64 zatsu-cwl-generator
           tar Jcf zatsu-cwl-generator-${ver}-linux-x86_64.tar.xz zatsu-cwl-generator
-      - name: listing files
-        run: ls
       - name: create release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: upload artifacts
-        uses: skx/github-action-publish-binaries@release-0.7
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: upload artifact for macOS
+        uses: svenstaro/upload-release-action@v1.0.1
         with:
-          args: 'zatsu-cwl-generator-*.tar.xz'
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: zatsu-cwl-generator-*-osx-x86_64.tar.xz
+          asset_name: macOSX binary
+          tag: ${{ github.ref }}
+      - name: upload artifact for Linux
+        uses: svenstaro/upload-release-action@v1.0.1
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: zatsu-cwl-generator-*-linux-x86_64.tar.xz
+          asset_name: Linux binary
+          tag: ${{ github.ref }}
       - name: create tagged docker image
         run: |
           tag="${GITHUB_REF##*/}"
