@@ -1,7 +1,6 @@
 name: Build dev container
 
 on:
-  push: {}
   schedule:
     - cron: 0 19 * * *
 
