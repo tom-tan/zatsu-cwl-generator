@@ -67,16 +67,18 @@ jobs:
           name: zatsu-cwl-generator-osx-x86_64
       - name: Archive binary for macOS
         run: |
+          ver="${GITHUB_REF##*/}"
           mv zatsu-cwl-generator-osx-x86_64 zatsu-cwl-generator
-          tar Jcf zatsu-cwl-generator-osx-x86_64.tar.xz zatsu-cwl-generator
+          tar Jcf zatsu-cwl-generator-${ver}-osx-x86_64.tar.xz zatsu-cwl-generator
       - name: Download binary for Linux
         uses: actions/download-artifact@v1.0.0
         with:
           name: zatsu-cwl-generator-linux-x86_64
       - name: Archive binary for Linux
         run: |
+          ver="${GITHUB_REF##*/}"
           mv zatsu-cwl-generator-linux-x86_64 zatsu-cwl-generator
-          tar Jcf zatsu-cwl-generator-linux-x86_64.tar.xz zatsu-cwl-generator
+          tar Jcf zatsu-cwl-generator-${ver}-linux-x86_64.tar.xz zatsu-cwl-generator
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
