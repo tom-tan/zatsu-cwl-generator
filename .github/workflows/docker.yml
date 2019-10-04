@@ -2,7 +2,7 @@ name: Build dev container
 
 on:
   schedule:
-    - cron: 0 17 * * *
+    - cron: 30 8 * * *
 
 jobs:
   build:
