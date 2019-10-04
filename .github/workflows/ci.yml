@@ -20,21 +20,12 @@ jobs:
         run: docker build . -f dev.Dockerfile -t ldc-musl
       - name: Run unittest
         run: docker run --rm -v $PWD:/workdir --workdir /workdir ldc-musl ldc2 -main -unittest -run zatsu-cwl-generator.d
-      - name: Build the binary and Docker image
-        run: |
-          docker run --rm -v $PWD:/workdir --workdir /workdir ldc-musl ldc2 -mtriple=x86_64-alpine-linux-musl -static -O -release zatsu-cwl-generator.d
-          docker build . -f Dockerfile -t ttanjo/zatsu-cwl-generator:latest
+      - name: Build the binary
+        run: docker run --rm -v $PWD:/workdir --workdir /workdir ldc-musl ldc2 -mtriple=x86_64-alpine-linux-musl -static -O -release zatsu-cwl-generator.d
       - uses: actions/upload-artifact@v1
         with:
           name: zatsu-cwl-generator-linux-x86_64
           path: zatsu-cwl-generator
-      - name: Upload the Docker image to Dockerhub
-        if: success()
-        run: |
-          echo $DOCKER_TOKEN | docker login -u ttanjo --password-stdin
-          docker push ttanjo/zatsu-cwl-generator:latest
-        env:
-          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 
   build-mac:
     runs-on: macOS-latest
@@ -74,21 +65,24 @@ jobs:
       - name: Archive binary for Linux
         run: |
           ver="${GITHUB_REF##*/}"
-          mv zatsu-cwl-generator-linux-x86_64/zatsu-cwl-generator .
+          cp -f zatsu-cwl-generator-linux-x86_64/zatsu-cwl-generator .
           tar Jcf zatsu-cwl-generator-${ver}-linux-x86_64.tar.xz zatsu-cwl-generator
-      - name: Create release
-        uses: softprops/action-gh-release@v1
-        with:
-          prerelease: ${{ contains(github.ref, '-') }}
-          files: zatsu-cwl-generator-*-x86_64.tar.xz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create tagged docker image
+      - name: Create docker images
         run: |
           tag="${GITHUB_REF##*/}"
-          docker pull ttanjo/zatsu-cwl-generator
+          mv zatsu-cwl-generator-linux-x86_64/zatsu-cwl-generator .
+          docker build . -f Dockerfile -t ttanjo/zatsu-cwl-generator:latest
           echo $DOCKER_TOKEN | docker login -u ttanjo --password-stdin
           docker tag ttanjo/zatsu-cwl-generator:latest ttanjo/zatsu-cwl-generator:$tag
+          docker push ttanjo/zatsu-cwl-generator:latest
           docker push ttanjo/zatsu-cwl-generator:$tag
         env:
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        if: success()
+        with:
+          prerelease: ${{ contains(github.ref, '-') }}
+          files: zatsu-cwl-generator-*.tar.xz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

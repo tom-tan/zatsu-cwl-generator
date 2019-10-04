@@ -42,7 +42,16 @@ There are several ways to execute it.
   stdout: output.txt
   ```
 
-- Download the latest binary from [CI](https://github.com/tom-tan/zatsu-cwl-generator/actions) and use it
+- Download the latest binary from the [release page](https://github.com/tom-tan/zatsu-cwl-generator/releases/latest)
+   ```console
+   $ export ver=v1.0.2
+   $ export os=linux # `export os=osx` for macOS
+   $ wget -O zatsu-cwl-generator.tar.xz https://github.com/tom-tan/zatsu-cwl-generator/releases/download/${ver}/zatsu-cwl-generator-${ver}-${os}-x86_64.tar.xz
+   $ tar xf zatsu-cwl-generator.tar.xz
+   $ chmod +x zatsu-cwl-generator
+   $ ./zatsu-cwl-generator "cat aaa.txt bbb.txt > output.txt"
+   ...
+   ```
 
 - Use `rdmd`
   ```console
