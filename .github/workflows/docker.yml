@@ -12,8 +12,10 @@ jobs:
       VER: 1.17.0
     steps:
       - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
       - name: Build dev image
-        run: docker build . -f dev.Dockerfile -t ttanjo/ldc-ubuntu-musl:${VER}
+        run: docker build . -f dev.Dockerfile -t ttanjo/ldc-ubuntu-musl:latest
       - name: Upload docker image
         run: |
           echo $DOCKER_TOKEN | docker login -u ttanjo --password-stdin
