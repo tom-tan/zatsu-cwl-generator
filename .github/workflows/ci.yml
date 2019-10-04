@@ -86,14 +86,14 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: zatsu-cwl-generator-osx-x86_64.tar.xz
-          asset_name: macOSX binary
+          asset_name: zatsu-cwl-generator-osx-x86_64.tar.xz
           tag: ${{ github.ref }}
       - name: upload artifact for Linux
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: zatsu-cwl-generator-linux-x86_64.tar.xz
-          asset_name: Linux binary
+          asset_name: zatsu-cwl-generator-linux-x86_64.tar.xz
           tag: ${{ github.ref }}
       - name: create tagged docker image
         run: |
