@@ -1,0 +1,23 @@
+name: Build dev container
+
+on:
+  schedule:
+    - cron: 0 3 * * *
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      VER: 1.17.0
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build dev image
+        run: docker build . -f dev.Dockerfile -t ttanjo/ldc-ubuntu-musl:${VER}
+      - name: Upload docker image
+        run: |
+          echo $DOCKER_TOKEN | docker login -u ttanjo --password-stdin
+          docker tag ttanjo/ldc-ubuntu-musl:latest ttanjo/ldc-ubuntu-musl:${VER}
+          docker push ttanjo/ldc-ubuntu-musl:latest
+          docker push ttanjo/ldc-ubuntu-musl:${VER}
+        env:
+          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
