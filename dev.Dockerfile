@@ -5,8 +5,8 @@ LABEL maintainer "Tomoya Tanjo <ttanjo@gmail.com>"
 ARG DEBCONF_NOWARNINGS=yes
 
 RUN apt-get update
-RUN apt-get install -y --no-install-recommends ninja musl-tools
-RUN CC=musl-gcc ldc-build-runtime --ninja --dFlags="-w;-mtriple=x86_64-alpine-linux-musl" BUILD_SHARED_LIBS=OFF
+RUN apt-get install -y --no-install-recommends cmake musl-tools
+RUN CC=musl-gcc ldc-build-runtime --dFlags="-w;-mtriple=x86_64-alpine-linux-musl" BUILD_SHARED_LIBS=OFF
 
 
 FROM dlang2/ldc-ubuntu:1.17.0
