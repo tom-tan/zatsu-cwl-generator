@@ -53,6 +53,18 @@ jobs:
           name: zatsu-cwl-generator-osx-x86_64
           path: zatsu-cwl-generator
 
+  stub:
+    needs: [build-docker, build-mac]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download binary for macOS
+        uses: actions/download-artifact@v1.0.0
+        with:
+          name: zatsu-cwl-generator-osx-x86_64
+      - run: |
+          ls -l
+          ls zatsu-cwl-generator-osx-x86_64
+
   release:
     needs: [build-docker, build-mac]
     runs-on: ubuntu-latest
