@@ -12,16 +12,16 @@ on:
 jobs:
   build-docker:
     runs-on: ubuntu-latest
+    container:
+      image: ttanjo/ldc-ubuntu-musl:1.17.0
     steps:
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
-      - name: Buld dev image
-        run: docker build . -f dev.Dockerfile -t ldc-musl
       - name: Run unittest
-        run: docker run --rm -v $PWD:/workdir --workdir /workdir ldc-musl ldc2 -main -unittest -run zatsu-cwl-generator.d
+        run: ldc2 -main -unittest -run zatsu-cwl-generator.d
       - name: Build the binary
-        run: docker run --rm -v $PWD:/workdir --workdir /workdir ldc-musl ldc2 -mtriple=x86_64-alpine-linux-musl -static -O -release zatsu-cwl-generator.d
+        run: ldc2 -mtriple=x86_64-alpine-linux-musl -static -O -release zatsu-cwl-generator.d
       - uses: actions/upload-artifact@v1
         with:
           name: zatsu-cwl-generator-linux-x86_64
