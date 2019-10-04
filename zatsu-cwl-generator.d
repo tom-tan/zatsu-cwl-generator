@@ -5,7 +5,7 @@ import std;
 @safe:
 
 /// Version of zatsu-cwl-generator
-enum Version = "v1.0.0";
+enum Version = "v1.0.2";
 
 private immutable IntRegex= ctRegex!r"^\d+$";
 private immutable DoubleRegex = ctRegex!r"^\d+\.\d+$";
