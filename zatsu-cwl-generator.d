@@ -1,4 +1,9 @@
 #!/usr/bin/env rdmd
+/**
+ * Authors: Tomoya Tanjo
+ * Copyright: Copyright (c) 2019 Manabu ISHII, Tomoya Tanjo
+ * License: $(LINK2 https://www.apache.org/licenses/LICENSE-2.0.txt, Apache-2.0)
+ */
 module zatsu_cwl_generator;
 import std;
 
