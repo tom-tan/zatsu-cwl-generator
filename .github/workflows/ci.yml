@@ -74,7 +74,7 @@ jobs:
         run: |
           tag="${GITHUB_REF##*/}"
           mv zatsu-cwl-generator-linux-x86_64/zatsu-cwl-generator .
-          docker build . -f Dockerfile -t ttanjo/zatsu-cwl-generator:latest
+          docker build . -f Dockerfile -t ttanjo/zatsu-cwl-generator:latest --squash
           echo $DOCKER_TOKEN | docker login -u ttanjo --password-stdin
           docker tag ttanjo/zatsu-cwl-generator:latest ttanjo/zatsu-cwl-generator:$tag
           docker push ttanjo/zatsu-cwl-generator:latest
