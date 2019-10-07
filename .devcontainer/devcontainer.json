@@ -1,7 +1,7 @@
 {
   "image": "ttanjo/ldc-ubuntu-musl:1.17.0",
   "postCreateCommand": "apt-get update && apt-get install -y --no-install-recommends git",
-  "extensions": ["webfreak.code-d", "ms-vsliveshare.vsliveshare"],
+  "extensions": ["webfreak.code-d"],
   "settings": {
     "d.dmdPath": "ldmd2",
     "d.stdlibPath": [
