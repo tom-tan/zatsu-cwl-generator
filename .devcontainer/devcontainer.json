@@ -1,6 +1,7 @@
 {
   "image": "ttanjo/ldc-ubuntu-musl:1.17.0",
-  "postCreateCommand": "apt-get update && apt-get install -y --no-install-recommends git",
+  "runArgs": ["-v", "${env:HOME}${env:USERPROFILE}/.ssh:/root/.ssh-localhost:ro"],
+  "postCreateCommand": "apt-get update && apt-get install -y --no-install-recommends git && mkdir -p ~/.ssh && cp -r ~/.ssh-localhost/* ~/.ssh && chmod 700 ~/.ssh && chmod 600 ~/.ssh/*",
   "extensions": ["webfreak.code-d"],
   "settings": {
     "d.dmdPath": "ldmd2",
