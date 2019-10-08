@@ -33,8 +33,9 @@ jobs:
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
-      - name: Install ldc
-        run: brew install ldc
+      - uses: mihails-strasuns/setup-dlang@v0.3.0
+        with:
+          compiler: ldc-1.17.0
       - name: Run unittest
         run: ldc2 -main -unittest -run zatsu-cwl-generator.d
       - name: Build the binary
