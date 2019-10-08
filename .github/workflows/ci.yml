@@ -70,7 +70,13 @@ jobs:
           ver="${GITHUB_REF##*/}"
           cp -f zatsu-cwl-generator-linux-x86_64/zatsu-cwl-generator .
           tar Jcf zatsu-cwl-generator-${ver}-linux-x86_64.tar.xz zatsu-cwl-generator
+      - name: Compare the version string with the tag
+        run: |
+          git_tag="${GITHUB_REF##*/}"
+          binary_ver=$(./zatsu-cwl-generator -v | awk '{ print $2 };')
+          test $git_tag = $binary_ver
       - name: Create docker images
+        if: success()
         run: |
           tag="${GITHUB_REF##*/}"
           mv zatsu-cwl-generator-linux-x86_64/zatsu-cwl-generator .
