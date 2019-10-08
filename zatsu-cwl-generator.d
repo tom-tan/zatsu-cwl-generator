@@ -7,8 +7,6 @@
 module zatsu_cwl_generator;
 import std;
 
-@safe:
-
 /// Version of zatsu-cwl-generator
 enum Version = "v1.0.2";
 
@@ -17,21 +15,50 @@ private immutable DoubleRegex = ctRegex!r"^\d+\.\d+$";
 
 version(unittest) {}
 else
-void main(string[] args)
+void main(string[] args) @trusted // trusted due to std.getopt
 {
-    if (args.length != 2)
+    ZatsuOptions opt;
+    bool showVersion;
+
+    auto helpInfo = args.getopt(
+        "container|c", "Use specified container in `hints`", &opt.container,
+        "version|v", "Show version string", &showVersion,
+    );
+
+    if (showVersion)
     {
         writefln("%s %s", args[0].baseName, Version);
-        writefln("Usage: %s <commandline>", args[0].baseName);
         return;
     }
-    args[1].toCWL.write;
+
+    if (helpInfo.helpWanted || args.length != 2)
+    {
+        defaultGetoptPrinter(format("Usage: %s [options] <commandline>", args[0].baseName),
+                             helpInfo.options);
+        return;
+    }
+    args[1].toCWL(opt).write;
+}
+
+@safe:
+
+/**
+ * Command line options for zatsu-cwl-generator
+ */
+struct ZatsuOptions
+{
+    /// container name for DockerRequirement
+    string container;
 }
 
 /**
- * Returns: a CWL definition from a given commandline `cmd`.
+ * Parameters:
+ *     cmd  = command line string
+ *     opts = optional parameters
+ *
+ * Returns: a CWL definition from a given commandline `cmd`
  */
-string toCWL(string cmd)
+string toCWL(string cmd, ZatsuOptions opts = ZatsuOptions.init)
 {
     immutable original_cmd = cmd;
     auto sout = "";
@@ -166,6 +193,16 @@ EOS";
     {
         cwl ~= format("stderr: %s\n", stderr_);
     }
+
+    if (!opts.container.empty)
+    {
+        cwl ~= format(q"EOS
+hints:
+  - class: DockerRequirement
+    dockerPull: %s
+EOS", opts.container);
+    }
+
     return cwl;
 }
 
@@ -292,6 +329,40 @@ outputs:
       items: [File, Directory]
     outputBinding:
       glob: "*"
+EOS");
+}
+
+/// with container
+unittest 
+{
+    assert("cat aaa.txt bbb.txt > output.txt".toCWL(ZatsuOptions("alpine:latest")) ==
+        q"EOS
+#!/usr/bin/env cwl-runner
+# Generated from: cat aaa.txt bbb.txt > output.txt
+class: CommandLineTool
+cwlVersion: v1.0
+baseCommand: cat
+arguments:
+  - $(inputs.aaa_txt)
+  - $(inputs.bbb_txt)
+inputs:
+  - id: aaa_txt
+    type: File
+  - id: bbb_txt
+    type: File
+outputs:
+  - id: all-for-debugging
+    type:
+      type: array
+      items: [File, Directory]
+    outputBinding:
+      glob: "*"
+  - id: out
+    type: stdout
+stdout: output.txt
+hints:
+  - class: DockerRequirement
+    dockerPull: alpine:latest
 EOS");
 }
 
