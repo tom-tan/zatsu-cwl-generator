@@ -72,7 +72,7 @@ jobs:
           cp -f zatsu-cwl-generator-linux-x86_64/zatsu-cwl-generator .
           tar Jcf zatsu-cwl-generator-${ver}-linux-x86_64.tar.xz zatsu-cwl-generator
       - name: Compare the version string with the tag
-        if: !contains(github.ref, '-')
+        if: "!contains(github.ref, '-')"
         run: |
           chmod +x zatsu-cwl-generator
           git_tag="${GITHUB_REF##*/}"
