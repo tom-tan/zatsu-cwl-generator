@@ -9,7 +9,7 @@ on:
   pull_request: {}
 
 jobs:
-  build-docker:
+  build-linux:
     runs-on: ubuntu-latest
     container:
       image: ttanjo/ldc-ubuntu-musl:1.17.0
@@ -44,8 +44,8 @@ jobs:
           name: zatsu-cwl-generator-osx-x86_64
           path: zatsu-cwl-generator
 
-  release:
-    needs: [build-docker, build-mac]
+  release-binary:
+    needs: [build-linux, build-mac]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && startswith(github.ref, 'refs/tags')
     steps:
@@ -53,19 +53,19 @@ jobs:
         uses: actions/download-artifact@v1.0.0
         with:
           name: zatsu-cwl-generator-osx-x86_64
-      - name: Archive binary for macOS
+      - name: Archive release binary for macOS
         run: |
           ver="${GITHUB_REF##*/}"
           mv zatsu-cwl-generator-osx-x86_64/zatsu-cwl-generator .
           tar Jcf zatsu-cwl-generator-${ver}-osx-x86_64.tar.xz zatsu-cwl-generator
-      - name: Download binary for Linux
+      - name: Download release binary for Linux
         uses: actions/download-artifact@v1.0.0
         with:
           name: zatsu-cwl-generator-linux-x86_64
       - name: Archive binary for Linux
         run: |
           ver="${GITHUB_REF##*/}"
-          cp -f zatsu-cwl-generator-linux-x86_64/zatsu-cwl-generator .
+          mv zatsu-cwl-generator-linux-x86_64/zatsu-cwl-generator .
           tar Jcf zatsu-cwl-generator-${ver}-linux-x86_64.tar.xz zatsu-cwl-generator
       - name: Compare the version string with the tag
         if: "!contains(github.ref, '-')"
@@ -83,12 +83,20 @@ jobs:
           files: zatsu-cwl-generator-*.tar.xz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  upload-container:
+    needs: [release-binary]
+    runs-on: ubuntu-latest
+    if: "!contains(github.ref, '-')" # release only
+    steps:
       - uses: actions/checkout@v1
-        if: "!contains(github.ref, '-') && success()" # release only
         with:
           fetch-depth: 1
+      - name: Download binary for container
+        uses: actions/download-artifact@v1.0.0
+        with:
+          name: zatsu-cwl-generator-linux-x86_64
       - name: Create docker images
-        if: "!contains(github.ref, '-') && success()" # release only
         run: |
           tag="${GITHUB_REF##*/}"
           mv zatsu-cwl-generator-linux-x86_64/zatsu-cwl-generator .
