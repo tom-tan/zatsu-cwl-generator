@@ -20,10 +20,19 @@ void main(string[] args) @trusted // trusted due to std.getopt
     ZatsuOptions opt;
     bool showVersion;
 
-    auto helpInfo = args.getopt(
-        "container|c", "Use specified container in `hints`", &opt.container,
-        "version|v", "Show version string", &showVersion,
-    );
+    GetoptResult helpInfo;
+    try
+    {
+        helpInfo = args.getopt(
+            "container|c", "Use specified container in `hints`", &opt.container,
+            "version|v", "Show version string", &showVersion,
+        );
+    }
+    catch (GetOptException e)
+    {
+        stderr.writefln("Error: %s", e.msg);
+        return;
+    }
 
     if (showVersion)
     {
