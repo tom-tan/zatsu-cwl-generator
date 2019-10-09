@@ -49,9 +49,6 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && startswith(github.ref, 'refs/tags')
     steps:
-      - uses: actions/checkout@v1
-        with:
-          fetch-depth: 1
       - name: Download binary for macOS
         uses: actions/download-artifact@v1.0.0
         with:
@@ -78,8 +75,20 @@ jobs:
           binary_ver=$(./zatsu-cwl-generator -v | cut -d ' ' -f 2)
           echo "git tag: ${git_tag}, binary version: ${binary_ver}"
           test "$git_tag" = "$binary_ver"
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        if: success() || cancelled() # release or prerelease
+        with:
+          prerelease: ${{ contains(github.ref, '-') }}
+          files: zatsu-cwl-generator-*.tar.xz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v1
+        if: "!contains(github.ref, '-') && success()" # release only
+        with:
+          fetch-depth: 1
       - name: Create docker images
-        if: success() || cancelled()
+        if: success() # release only
         run: |
           tag="${GITHUB_REF##*/}"
           mv zatsu-cwl-generator-linux-x86_64/zatsu-cwl-generator .
@@ -90,11 +99,3 @@ jobs:
           docker push ttanjo/zatsu-cwl-generator:$tag
         env:
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-      - name: Create release
-        uses: softprops/action-gh-release@v1
-        if: success()
-        with:
-          prerelease: ${{ contains(github.ref, '-') }}
-          files: zatsu-cwl-generator-*.tar.xz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
