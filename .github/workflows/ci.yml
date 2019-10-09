@@ -88,7 +88,7 @@ jobs:
         with:
           fetch-depth: 1
       - name: Create docker images
-        if: success() # release only
+        if: "!contains(github.ref, '-') && success()" # release only
         run: |
           tag="${GITHUB_REF##*/}"
           mv zatsu-cwl-generator-linux-x86_64/zatsu-cwl-generator .
