@@ -3,6 +3,16 @@
 
 This is a simple CWL definition generator from given execution commands.
 
+# How to install
+
+There are single binary for Linux and Mac.
+
+You can install single binary.
+
+```
+curl -fLSs https://github.com/tom-tan/zatsu-cwl-generator/releases/download/v1.0.4/zatsu-cwl-generator-v1.0.4-linux-x86_64.tar.xz  | tar Jxvf - && sudo mv zatsu-cwl-generator /usr/local/bin && sudo chmod 755 /usr/local/bin/zatsu-cwl-generator
+```
+
 # Build Requirements
 - [Visual Studio Code](https://code.visualstudio.com) (optional)
   - This repository provides a development environment for [Visual Studio Code Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension
