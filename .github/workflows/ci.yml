@@ -48,7 +48,7 @@ jobs:
   release:
     needs: [build-docker, build-mac]
     runs-on: ubuntu-latest
-    if: github.event_name == 'create'
+    if: github.event_name == 'create' && startswith(github.ref, 'refs/tags')
     steps:
       - uses: actions/checkout@v1
         with:
