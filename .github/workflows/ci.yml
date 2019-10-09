@@ -76,7 +76,7 @@ jobs:
         run: |
           chmod +x zatsu-cwl-generator
           git_tag="${GITHUB_REF##*/}"
-          binary_ver=$(./zatsu-cwl-generator -v | awk '{ print $2 };')
+          binary_ver=$(./zatsu-cwl-generator -v | cut -d ' ' -f 2)
           echo "git tag: ${git_tag}, binary version: ${binary_ver}"
           test "$git_tag" = "$binary_ver"
       - name: Create docker images
