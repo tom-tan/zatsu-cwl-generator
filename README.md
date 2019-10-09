@@ -9,9 +9,18 @@ There are single binary for Linux and Mac.
 
 You can install single binary.
 
+Linux
+
 ```
 curl -fLSs https://github.com/tom-tan/zatsu-cwl-generator/releases/download/v1.0.4/zatsu-cwl-generator-v1.0.4-linux-x86_64.tar.xz  | tar Jxvf - && sudo mv zatsu-cwl-generator /usr/local/bin && sudo chmod 755 /usr/local/bin/zatsu-cwl-generator
 ```
+
+Mac
+
+```
+curl -fLSs https://github.com/tom-tan/zatsu-cwl-generator/releases/download/v1.0.4/zatsu-cwl-generator-v1.0.4-osx-x86_64.tar.xz  | tar Jxvf - && sudo mv zatsu-cwl-generator /usr/local/bin && sudo chmod 755 /usr/local/bin/zatsu-cwl-generator
+```
+
 
 # Build Requirements
 - [Visual Studio Code](https://code.visualstudio.com) (optional)
