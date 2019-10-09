@@ -1,4 +1,6 @@
 # zatsu-cwl-generator
+[![release](https://badgen.net/github/release/tom-tan/zatsu-cwl-generator/stable)](https://github.com/tom-tan/zatsu-cwl-generator/releases/latest)
+[![container](https://badgen.net/badge/-/docker?icon=docker&label)](https://hub.docker.com/r/ttanjo/zatsu-cwl-generator)
 [![Actions Status](https://github.com/tom-tan/zatsu-cwl-generator/workflows/Actions/badge.svg)](https://github.com/tom-tan/zatsu-cwl-generator/actions)
 
 This is a simple CWL definition generator from given execution commands.
