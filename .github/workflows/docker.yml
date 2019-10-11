@@ -14,12 +14,12 @@ jobs:
         with:
           fetch-depth: 1
       - name: Build dev image
-        run: docker build . -f dev.Dockerfile -t ttanjo/ldc-ubuntu-musl:latest
+        run: docker build . -f dev.Dockerfile -t ttanjo/ldc-alpine:latest
       - name: Upload docker image
         run: |
           echo $DOCKER_TOKEN | docker login -u ttanjo --password-stdin
-          docker tag ttanjo/ldc-ubuntu-musl:latest ttanjo/ldc-ubuntu-musl:${VER}
-          docker push ttanjo/ldc-ubuntu-musl:latest
-          docker push ttanjo/ldc-ubuntu-musl:${VER}
+          docker tag ttanjo/ldc-alpine:latest ttanjo/ldc-alpine:${VER}
+          docker push ttanjo/ldc-alpine:latest
+          docker push ttanjo/ldc-alpine:${VER}
         env:
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}

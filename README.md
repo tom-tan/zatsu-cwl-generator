@@ -68,22 +68,17 @@ There are several ways to execute it.
   ...
   ```
 
-If you need a static linked binary, add `-mtriple=x86_64-alpine-linux-musl -static` to the build command:
+If you need a static linked binary, add `-static` to the build command:
 ```console
 $ ldc2 zatsu-cwl-generator.d # for dynamic link (default)
 $ ldd zatsu-cwl-generator
-        linux-vdso.so.1 (0x00007ffde1327000)
-        librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007f83cf2d4000)
-        libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f83cf0d0000)
-        libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f83ceeb1000)
-        libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f83ceb13000)
-        libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f83ce8fb000)
-        libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f83ce50a000)
-        /lib64/ld-linux-x86-64.so.2 (0x00007f83cf718000)
+        /lib/ld-musl-x86_64.so.1 (0x7f476696e000)
+        libgcc_s.so.1 => /usr/lib/libgcc_s.so.1 (0x7f4766711000)
+        libc.musl-x86_64.so.1 => /lib/ld-musl-x86_64.so.1 (0x7f476696e000)
 
-$ ldc2 -mtriple=x86_64-alpine-linux-musl -static zatsu-cwl-generator.d # for static link
-$ ldd zatu-cwl-generator
-        not a dynamic executable
+$ ldc2 -static zatsu-cwl-generator.d # for static link
+$ ldd zatsu-cwl-generator
+/lib/ld-musl-x86_64.so.1: zatsu-cwl-generator: Not a valid dynamic program
 ```
 
 # How to test this program

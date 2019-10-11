@@ -1,12 +1,12 @@
 {
-  "image": "ttanjo/ldc-ubuntu-musl:1.17.0",
+  "image": "ttanjo/ldc-alpine:1.17.0",
   "runArgs": ["-v", "${env:HOME}${env:USERPROFILE}/.ssh:/root/.ssh-localhost:ro"],
-  "postCreateCommand": "apt-get update && apt-get install -y --no-install-recommends git openssh-client && mkdir -p ~/.ssh && cp -r ~/.ssh-localhost/* ~/.ssh && chmod 700 ~/.ssh && chmod 600 ~/.ssh/*",
+  "postCreateCommand": "apk --no-cache add git openssh-client && mkdir -p ~/.ssh && cp -r ~/.ssh-localhost/* ~/.ssh && chmod 700 ~/.ssh && chmod 600 ~/.ssh/*",
   "extensions": ["webfreak.code-d"],
   "settings": {
     "d.dmdPath": "ldmd2",
     "d.stdlibPath": [
-      "/dlang/dc/import"
+      "/dlang/dc/include/d"
     ]
   }
 }
