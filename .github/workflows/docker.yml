@@ -1,6 +1,9 @@
 name: Build dev container
 
 on:
+  push:
+    paths:
+      - '.github/workflows/docker.yml'
   schedule:
     - cron: 0 19 * * * # in GMT
 
@@ -16,6 +19,7 @@ jobs:
       - name: Build dev image
         run: docker build . -f dev.Dockerfile -t ttanjo/ldc-alpine:latest
       - name: Upload docker image
+        if: github.event_name == 'schedule'
         run: |
           echo $DOCKER_TOKEN | docker login -u ttanjo --password-stdin
           docker tag ttanjo/ldc-alpine:latest ttanjo/ldc-alpine:${VER}
