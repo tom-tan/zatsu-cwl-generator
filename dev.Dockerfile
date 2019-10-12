@@ -80,7 +80,7 @@ RUN git clone https://github.com/dlang-community/DCD.git -b v${dcd_ver}
 WORKDIR DCD
 RUN dub build -b release -c client
 RUN dub build -b release -c server
-RUN strip dcd-client dcd-server
+RUN strip bin/dcd-client bin/dcd-server
 RUN mv bin/dcd-* /dlang/.code-d/bin
 
 
