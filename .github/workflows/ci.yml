@@ -57,6 +57,7 @@ jobs:
         run: |
           ver="${GITHUB_REF##*/}"
           mv zatsu-cwl-generator-osx-x86_64/zatsu-cwl-generator .
+          chmod +x zatsu-cwl-generator
           tar Jcf zatsu-cwl-generator-${ver}-osx-x86_64.tar.xz zatsu-cwl-generator
       - name: Download release binary for Linux
         uses: actions/download-artifact@v1.0.0
@@ -66,11 +67,11 @@ jobs:
         run: |
           ver="${GITHUB_REF##*/}"
           mv zatsu-cwl-generator-linux-x86_64/zatsu-cwl-generator .
+          chmod +x zatsu-cwl-generator
           tar Jcf zatsu-cwl-generator-${ver}-linux-x86_64.tar.xz zatsu-cwl-generator
       - name: Compare the version string with the tag
         if: "!contains(github.ref, '-')"
         run: |
-          chmod +x zatsu-cwl-generator
           git_tag="${GITHUB_REF##*/}"
           binary_ver=$(./zatsu-cwl-generator -v | cut -d ' ' -f 2)
           echo "git tag: ${git_tag}, binary version: ${binary_ver}"
@@ -100,6 +101,7 @@ jobs:
         run: |
           tag="${GITHUB_REF##*/}"
           mv zatsu-cwl-generator-linux-x86_64/zatsu-cwl-generator .
+          chmod +x zatsu-cwl-generator
           docker build . -f Dockerfile -t ttanjo/zatsu-cwl-generator:latest
           echo $DOCKER_TOKEN | docker login -u ttanjo --password-stdin
           docker tag ttanjo/zatsu-cwl-generator:latest ttanjo/zatsu-cwl-generator:$tag
