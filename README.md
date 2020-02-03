@@ -3,7 +3,7 @@
 [![container](https://badgen.net/badge/-/docker?icon=docker&label)](https://hub.docker.com/r/ttanjo/zatsu-cwl-generator)
 [![Actions Status](https://github.com/tom-tan/zatsu-cwl-generator/workflows/Actions/badge.svg)](https://github.com/tom-tan/zatsu-cwl-generator/actions)
 
-This is a simple CWL definition generator from given execution commands.
+This is a simple CWL document generator from given execution commands.
 
 # Build Requirements
 - [Visual Studio Code](https://code.visualstudio.com) (optional)
