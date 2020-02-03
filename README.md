@@ -13,7 +13,7 @@ This is a simple CWL document generator from given execution commands.
 
 # How to execute
 
-There are several ways to execute it.
+There are several ways to execute it. See `zatsu-cwl-generator --help` for more details.
 
 - Use [Docker container](https://hub.docker.com/r/ttanjo/zatsu-cwl-generator)
 
