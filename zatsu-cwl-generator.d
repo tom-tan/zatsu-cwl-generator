@@ -13,8 +13,6 @@ enum Version = "v1.0.6";
 private immutable IntRegex= ctRegex!r"^\d+$";
 private immutable DoubleRegex = ctRegex!r"^\d+\.\d+$";
 
-version(unittest) {}
-else
 void main(string[] args) @trusted // trusted due to std.getopt
 {
     ZatsuOptions opt;
@@ -58,7 +56,7 @@ struct ZatsuOptions
  *
  * Returns: a CWL definition from a given commandline `cmd`
  */
-string toCWL(string cmd, ZatsuOptions opts = ZatsuOptions.init)
+string toCWL(string cmd, ZatsuOptions opts = ZatsuOptions.init) @trusted
 {
     immutable original_cmd = cmd;
     auto sout = "";
@@ -144,23 +142,28 @@ EOS"
             immutable seemsOut = a.seemsOutput(prevOption);
 
             // guess type from option name
-            immutable type = a.guessType(prevOption);
+            immutable type = seemsOut ? "string" : a.guessType(prevOption);
             immutable param = (prevOption.empty ? a : prevOption).toInputParam;
             immutable inParam = seemsOut ? param~"_name" : param;
             immutable outParam = seemsOut ? param : "";
+            immutable default_ = defaultValueStr(type, a);
             arguments ~= format("  - $(inputs.%s)", inParam);
             inputs ~= format(q"EOS
   - id: %s
-    type: %s%s
-EOS", inParam, seemsOut ? "string" : type, a == "-" ? "\n    streamable: true" : "");
+    type: %s
+    default:%s%s
+EOS", inParam,
+      type,
+      default_.canFind("\n") ? "\n"~default_.splitLines.map!(l => "      "~l).join("\n") : " "~default_,
+      a == "-" ? "\n    streamable: true" : "");
             if (seemsOut)
             {
                 outputs ~= format(q"EOS
 #  - id: %s
-#    type: %s
+#    type: File
 #    outputBinding:
 #      glob: "$(inputs.%s)"
-EOS", outParam, type, inParam);
+EOS", outParam, inParam);
             }
             prevOption = "";
         }
@@ -222,8 +225,14 @@ arguments:
 inputs:
   - id: aaa_txt
     type: File
+    default:
+      class: File
+      location: aaa.txt
   - id: bbb_txt
     type: File
+    default:
+      class: File
+      location: bbb.txt
 outputs:
   - id: all-for-debugging
     type:
@@ -254,8 +263,12 @@ arguments:
 inputs:
   - id: n
     type: int
+    default: 5
   - id: ccc_txt
     type: File
+    default:
+      class: File
+      location: ccc.txt
 outputs:
   - id: all-for-debugging
     type:
@@ -286,8 +299,12 @@ arguments:
 inputs:
   - id: o_name
     type: string
+    default: sample.exe
   - id: sample_c
     type: File
+    default:
+      class: File
+      location: sample.c
 outputs:
   - id: all-for-debugging
     type:
@@ -319,8 +336,12 @@ arguments:
 inputs:
   - id: view
     type: Any
+    default: view
   - id: bS
     type: File
+    default:
+      class: File
+      location: /dev/stdin
     streamable: true
 outputs:
   - id: all-for-debugging
@@ -348,8 +369,14 @@ arguments:
 inputs:
   - id: aaa_txt
     type: File
+    default:
+      class: File
+      location: aaa.txt
   - id: bbb_txt
     type: File
+    default:
+      class: File
+      location: bbb.txt
 outputs:
   - id: all-for-debugging
     type:
@@ -540,4 +567,20 @@ unittest
     // if the value is `"-"`, it should not be an output object
     assert(!"-".seemsOutput);
     assert(!"-".seemsOutput("-o"));
+}
+
+string defaultValueStr(string type, string val)
+{
+    switch(type)
+    {
+    case "int", "double", "string", "Any":
+        return val;
+    case "File", "Directory":
+        return format!q"EOS
+class: %s
+location: %s
+EOS"(type, val == "-" ? "/dev/stdin" : val).chomp;
+    default:
+        assert(false, format!"Unsupported guessed type: `%s` for value `%s`"(type, val));
+    }
 }
