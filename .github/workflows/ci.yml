@@ -12,15 +12,16 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     container:
-      image: ttanjo/ldc-ubuntu-musl:1.17.0
+      image: alpine:3.16
     steps:
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
+      - run: apk add --no-cache ldc gcc musl-dev llvm-libunwind-static
       - name: Run unittest
         run: ldc2 -main -unittest -run zatsu-cwl-generator.d
       - name: Build the binary
-        run: ldc2 -mtriple=x86_64-alpine-linux-musl -static -O -release zatsu-cwl-generator.d
+        run: ldc2 -static -O -release zatsu-cwl-generator.d
       - uses: actions/upload-artifact@v1
         with:
           name: zatsu-cwl-generator-linux-x86_64
@@ -34,7 +35,7 @@ jobs:
           fetch-depth: 1
       - uses: dlang-community/setup-dlang@v1
         with:
-          compiler: ldc-1.30.0
+          compiler: ldc-1.28.1
       - name: Run unittest
         run: ldc2 -main -unittest -run zatsu-cwl-generator.d
       - name: Build the binary

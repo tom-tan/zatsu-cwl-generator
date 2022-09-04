@@ -1,4 +1,4 @@
-FROM busybox:1.31.0-musl
+FROM busybox:1.34.0-musl
 
 LABEL maintainer "Tomoya Tanjo <ttanjo@gmail.com>"
 
