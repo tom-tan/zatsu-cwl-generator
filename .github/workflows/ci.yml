@@ -94,10 +94,6 @@ jobs:
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
-      - name: Download binary for container
-        uses: actions/download-artifact@v1.0.0
-        with:
-          name: zatsu-cwl-generator-linux-x86_64
       - name: Create docker images
         run: |
           tag="${GITHUB_REF##*/}"
