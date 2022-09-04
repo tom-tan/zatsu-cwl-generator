@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 1
       - run: apk add --no-cache ldc gcc musl-dev llvm-libunwind-static
       - name: Run unittest
-        run: ldc2 -main -unittest -run zatsu-cwl-generator.d
+        run: ldc2 -unittest -run zatsu-cwl-generator.d
       - name: Build the binary
         run: ldc2 -static -O -release zatsu-cwl-generator.d
       - uses: actions/upload-artifact@v1
@@ -37,7 +37,7 @@ jobs:
         with:
           compiler: ldc-1.28.1
       - name: Run unittest
-        run: ldc2 -main -unittest -run zatsu-cwl-generator.d
+        run: ldc2 -unittest -run zatsu-cwl-generator.d
       - name: Build the binary
         run: ldc2 -O -release zatsu-cwl-generator.d
       - uses: actions/upload-artifact@v1
