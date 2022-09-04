@@ -1,12 +1,16 @@
 {
-  "image": "ttanjo/ldc-alpine:1.17.0",
-  "runArgs": ["-v", "${env:HOME}${env:USERPROFILE}/.ssh:/root/.ssh-localhost:ro"],
-  "postCreateCommand": "apk --no-cache add git openssh-client && mkdir -p ~/.ssh && cp -r ~/.ssh-localhost/* ~/.ssh && chmod 700 ~/.ssh && chmod 600 ~/.ssh/*",
-  "extensions": ["webfreak.code-d"],
+  "image": "ghcr.io/tom-tan/ldc:1.30.0",
+  "runArgs": ["--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined"],
+  "extensions": ["webfreak.dlang-bundle"],
   "settings": {
-    "d.dmdPath": "ldmd2",
+    "d.dmdPath": "dmd",
     "d.stdlibPath": [
-      "/dlang/dc/include/d"
+      // for dmd
+      "/dlang/dc/src/druntime/import",
+      "/dlang/dc/src/phobos",
+      // for ldc and gdc
+      "/dlang/dc/import"
     ]
-  }
+  },
+  "remoteUser": "vscode"
 }
