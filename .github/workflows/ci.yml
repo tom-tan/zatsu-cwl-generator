@@ -9,7 +9,32 @@ on:
   pull_request: {}
 
 jobs:
+  info:
+    runs-on: ubuntu-latest
+    outputs:
+      has_tag: ${{ steps.get_info.outputs.has_tag }}
+      tag: ${{ steps.get_info.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - id: get_info
+        run: |
+          tag="${GITHUB_REF##*/}"
+          echo "::set-output name=has_tag::$has_tag"
+          echo "::set-output name=tag::$tag"
+        env:
+          has_tag: ${{ startsWith(github.ref, 'refs/tags/') }}
+      - name: Validate version tag
+        if: github.event_name == 'push' && steps.get_info.outputs.has_tag == 'true'
+        run: |
+          if [ $(cat VERSION) != ${{ steps.get_info.outputs.tag }} ]; then
+            echo "::error file=VERSION,line=1,col=1::Version string in VERSION ($(cat VERSION)) does not match the tag string (${{ steps.get_info.outputs.tag }})"
+            exit 1
+          fi
+
   build-linux:
+    needs: info
     runs-on: ubuntu-latest
     container:
       image: alpine:3.16
@@ -19,15 +44,16 @@ jobs:
           fetch-depth: 1
       - run: apk add --no-cache ldc gcc musl-dev llvm-libunwind-static
       - name: Run unittest
-        run: ldc2 -unittest -run zatsu-cwl-generator.d
+        run: ldc2 -J. -unittest -run zatsu-cwl-generator.d
       - name: Build the binary
-        run: ldc2 -static -O -release zatsu-cwl-generator.d
+        run: ldc2 -J. -static -O -release zatsu-cwl-generator.d
       - uses: actions/upload-artifact@v1
         with:
           name: zatsu-cwl-generator-linux-x86_64
           path: zatsu-cwl-generator
 
   build-mac:
+    needs: info
     runs-on: macOS-latest
     steps:
       - uses: actions/checkout@v1
@@ -37,18 +63,18 @@ jobs:
         with:
           compiler: ldc-1.28.1
       - name: Run unittest
-        run: ldc2 -unittest -run zatsu-cwl-generator.d
+        run: ldc2 -J. -unittest -run zatsu-cwl-generator.d
       - name: Build the binary
-        run: ldc2 -O -release zatsu-cwl-generator.d
+        run: ldc2 -J. -O -release zatsu-cwl-generator.d
       - uses: actions/upload-artifact@v1
         with:
           name: zatsu-cwl-generator-osx-x86_64
           path: zatsu-cwl-generator
 
   release-binary:
-    needs: [build-linux, build-mac]
+    needs: [info, build-linux, build-mac]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && startswith(github.ref, 'refs/tags')
+    if: github.event_name == 'push' && needs.info.outputs.has_tag == 'true'
     steps:
       - name: Download binary for macOS
         uses: actions/download-artifact@v1.0.0
@@ -56,7 +82,7 @@ jobs:
           name: zatsu-cwl-generator-osx-x86_64
       - name: Archive release binary for macOS
         run: |
-          ver="${GITHUB_REF##*/}"
+          ver="${{ needs.info.outputs.has_tag }}"
           mv zatsu-cwl-generator-osx-x86_64/zatsu-cwl-generator .
           chmod +x zatsu-cwl-generator
           tar Jcf zatsu-cwl-generator-${ver}-osx-x86_64.tar.xz zatsu-cwl-generator
@@ -66,17 +92,10 @@ jobs:
           name: zatsu-cwl-generator-linux-x86_64
       - name: Archive binary for Linux
         run: |
-          ver="${GITHUB_REF##*/}"
+          ver="${{ needs.info.outputs.has_tag }}"
           mv zatsu-cwl-generator-linux-x86_64/zatsu-cwl-generator .
           chmod +x zatsu-cwl-generator
           tar Jcf zatsu-cwl-generator-${ver}-linux-x86_64.tar.xz zatsu-cwl-generator
-      - name: Compare the version string with the tag
-        if: "!contains(github.ref, '-')"
-        run: |
-          git_tag="${GITHUB_REF##*/}"
-          binary_ver=$(./zatsu-cwl-generator -v | cut -d ' ' -f 2)
-          echo "git tag: ${git_tag}, binary version: ${binary_ver}"
-          test "$git_tag" = "$binary_ver"
       - name: Create release
         uses: softprops/action-gh-release@v1
         if: success() || cancelled() # release or prerelease
@@ -87,23 +106,40 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   upload-container:
-    needs: [release-binary]
     runs-on: ubuntu-latest
-    if: "!contains(github.ref, '-')" # release only
+    needs: release-binary
+    if: github.event_name == 'push' && needs.info.outputs.has_tag == 'true' && !contains(github.ref, '-')
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout
+        uses: actions/checkout@v2
         with:
           fetch-depth: 1
-      - name: Create docker images
-        run: |
-          tag="${GITHUB_REF##*/}"
-          mv zatsu-cwl-generator-linux-x86_64/zatsu-cwl-generator .
-          chmod +x zatsu-cwl-generator
-          docker build . -f Dockerfile -t ttanjo/zatsu-cwl-generator:latest
-          docker run --rm ttanjo/zatsu-cwl-generator:latest
-          echo $DOCKER_TOKEN | docker login -u ttanjo --password-stdin
-          docker tag ttanjo/zatsu-cwl-generator:latest ttanjo/zatsu-cwl-generator:$tag
-          docker push ttanjo/zatsu-cwl-generator:latest
-          docker push ttanjo/zatsu-cwl-generator:$tag
-        env:
-          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+          submodules: true
+      - name: Docker meta
+        id: docker_meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ghcr.io/tom-tan/zatsu-cwl-generator
+          tags: |
+            type=match,event=tag,pattern=v\d+.\d+.\d+
+            master
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1 
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ steps.docker_meta.outputs.tags }}
