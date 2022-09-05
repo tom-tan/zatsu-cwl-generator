@@ -8,9 +8,9 @@ module zatsu_cwl_generator;
 import std;
 
 /// Version of zatsu-cwl-generator
-enum Version = import("VERSION");
+enum Version = import("VERSION").chomp;
 
-private immutable IntRegex= ctRegex!r"^\d+$";
+private immutable IntRegex = ctRegex!r"^\d+$";
 private immutable DoubleRegex = ctRegex!r"^\d+\.\d+$";
 
 void main(string[] args) @trusted // trusted due to std.getopt
