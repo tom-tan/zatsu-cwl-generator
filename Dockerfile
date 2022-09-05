@@ -6,7 +6,7 @@ RUN apk add --no-cache ldc gcc musl-dev llvm-libunwind-static
 
 COPY zatsu-cwl-generator.d /workdir
 
-RUN ldc2 -static -O -release zatsu-cwl-generator.d
+RUN ldc2 -J. -static -O -release zatsu-cwl-generator.d
 
 
 FROM busybox:1.34.0-musl
