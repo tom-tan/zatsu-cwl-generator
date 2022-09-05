@@ -5,6 +5,7 @@ WORKDIR /workdir
 RUN apk add --no-cache ldc gcc musl-dev llvm-libunwind-static
 
 COPY zatsu-cwl-generator.d /workdir
+COPY VERSION /workdir
 
 RUN ldc2 -J. -static -O -release zatsu-cwl-generator.d
 
