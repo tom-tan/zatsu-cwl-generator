@@ -82,7 +82,7 @@ jobs:
           name: zatsu-cwl-generator-osx-x86_64
       - name: Archive release binary for macOS
         run: |
-          ver="${{ needs.info.outputs.has_tag }}"
+          ver="${{ needs.info.outputs.tag }}"
           mv zatsu-cwl-generator-osx-x86_64/zatsu-cwl-generator .
           chmod +x zatsu-cwl-generator
           tar Jcf zatsu-cwl-generator-${ver}-osx-x86_64.tar.xz zatsu-cwl-generator
@@ -92,7 +92,7 @@ jobs:
           name: zatsu-cwl-generator-linux-x86_64
       - name: Archive binary for Linux
         run: |
-          ver="${{ needs.info.outputs.has_tag }}"
+          ver="${{ needs.info.outputs.tag }}"
           mv zatsu-cwl-generator-linux-x86_64/zatsu-cwl-generator .
           chmod +x zatsu-cwl-generator
           tar Jcf zatsu-cwl-generator-${ver}-linux-x86_64.tar.xz zatsu-cwl-generator
